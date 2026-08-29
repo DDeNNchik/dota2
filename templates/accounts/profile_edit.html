@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Профиль — DotaForge{% endblock %}
+{% block content %}
+<section class="profile-editor">
+  <div class="section-heading"><p class="eyebrow">Игровой профиль</p><h1>Расскажите о своей игре</h1><p>Все поля необязательны. На публичной странице отобразится только то, что вы заполните.</p></div>
+  <form class="profile-form" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
+    {% for field in form %}
+      <div class="field {% if field.name == 'description' %}field-wide{% endif %}{% if field.name == 'favorite_heroes' %}field-wide field-heroes{% endif %}{% if field.name == 'microphone_available' %}field-check{% endif %}">
+        {% if field.name == 'microphone_available' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% elif field.name == 'favorite_heroes' %}<label>{{ field.label }}</label><details class="hero-picker"><summary>Открыть список героев</summary>{{ field }}</details><small class="field-help">Можно выбрать несколько героев.</small>
+        {% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}
+        {% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}
+      </div>
+    {% endfor %}
+    <div class="form-actions"><button class="button" type="submit">Сохранить профиль</button><a class="button button-ghost" href="{% url 'profile_detail' user.username %}">Посмотреть страницу</a></div>
+  </form>
+</section>
+{% endblock %}

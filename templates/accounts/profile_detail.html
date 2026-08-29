@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile_user.username }} — DotaForge{% endblock %}
+{% block content %}
+<section class="profile-page">
+  <div class="profile-hero">
+    {% if profile.avatar %}<img class="avatar" src="{{ profile.avatar.url }}" alt="Аватар {{ profile_user.username }}">{% else %}<div class="avatar avatar-placeholder">{{ profile_user.username|slice:':1'|upper }}</div>{% endif %}
+    <div><p class="eyebrow">Профиль игрока</p><h1>{{ profile_user.username }}</h1>{% if profile.dota_nickname %}<p class="dota-name">{{ profile.dota_nickname }}</p>{% endif %}</div>
+    {% if user == profile_user %}<a class="button button-small profile-edit-link" href="{% url 'profile_edit' %}">Редактировать</a>{% endif %}
+  </div>
+  {% if profile.description %}<section class="profile-section"><h2>О себе</h2><p>{{ profile.description|linebreaksbr }}</p></section>{% endif %}
+  {% if profile.country or profile.age or profile.mmr or profile.preferred_roles.exists or profile.favorite_heroes.exists or profile.microphone_available or profile.steam_id or profile.availability or profile.timezone %}
+  <section class="profile-section"><h2>Игровая информация</h2><dl class="stats-grid">
+    {% if profile.mmr %}<div><dt>MMR</dt><dd>{{ profile.mmr }}</dd></div>{% endif %}
+    {% if profile.preferred_roles.exists %}<div><dt>Роли</dt><dd>{% for role in profile.preferred_roles.all %}{{ role.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+    {% if profile.favorite_heroes.exists %}<div><dt>Любимые герои</dt><dd>{% for hero in profile.favorite_heroes.all %}{{ hero.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</dd></div>{% endif %}
+    {% if profile.country %}<div><dt>Страна</dt><dd>{{ profile.country }}</dd></div>{% endif %}
+    {% if profile.age %}<div><dt>Возраст</dt><dd>{{ profile.age }}</dd></div>{% endif %}
+    {% if profile.microphone_available %}<div><dt>Микрофон</dt><dd>Доступен</dd></div>{% endif %}
+    {% if profile.availability %}<div><dt>Доступность</dt><dd>{{ profile.availability }}</dd></div>{% endif %}
+    {% if profile.timezone %}<div><dt>Часовой пояс</dt><dd>{{ profile.get_timezone_display }}</dd></div>{% endif %}
+    {% if profile.steam_id %}<div><dt>Steam</dt><dd><a href="{{ profile.steam_id }}" rel="noopener noreferrer" target="_blank">Открыть профиль</a></dd></div>{% endif %}
+  </dl></section>
+  {% endif %}
+  {% if not profile.description and not profile.country and not profile.age and not profile.dota_nickname and not profile.steam_id and not profile.mmr and not profile.preferred_roles.exists and not profile.favorite_heroes.exists and not profile.microphone_available and not profile.availability and not profile.timezone %}
+  <section class="empty-state"><h2>Профиль пока пуст</h2><p>Игрок ещё не добавил игровую информацию.</p></section>
+  {% endif %}
+</section>
+{% endblock %}

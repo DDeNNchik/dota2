@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="DotaForge — социальная платформа для игроков Dota 2.">
+  <title>{% block title %}DotaForge{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="{% url 'home' %}">Dota<span>Forge</span></a>
+    <nav aria-label="Главная навигация">
+      <a href="#">Матчи</a><a href="#">Турниры</a><a href="#">Игроки</a><a href="#">Команды</a><a href="#">Гайды</a>
+    </nav>
+    <div class="account-menu">
+      {% if user.is_authenticated %}
+        <a class="account-chip" href="{% url 'profile_detail' user.username %}" aria-label="Открыть профиль">
+          {% if current_profile.avatar %}
+            <img src="{{ current_profile.avatar.url }}" alt="" class="nav-avatar">
+          {% else %}
+            <span class="nav-avatar nav-avatar-placeholder">{{ user.username|slice:':1'|upper }}</span>
+          {% endif %}
+          <span class="account-chip-text"><small>Профиль</small><strong>{% if current_profile.dota_nickname %}{{ current_profile.dota_nickname }}{% else %}{{ user.username }}{% endif %}</strong></span>
+        </a>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button">Выйти</button></form>
+      {% else %}
+        <a href="{% url 'accounts:login' %}">Войти</a>
+        <a class="button button-small" href="{% url 'accounts:register' %}">Регистрация</a>
+      {% endif %}
+    </div>
+  </header>
+  <main class="page-shell">
+    {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

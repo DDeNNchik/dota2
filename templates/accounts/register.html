@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}Регистрация — DotaForge{% endblock %}
+{% block content %}
+<section class="auth-card"><p class="eyebrow">Новый аккаунт</p><h1>Создайте DotaForge ID</h1><p>Игровые данные добавите позже — сейчас нужны только четыре поля.</p>
+  <form method="post" novalidate>{% csrf_token %}
+    {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}</div>{% endfor %}
+    {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+    <button class="button" type="submit">Создать аккаунт</button>
+  </form>
+  <p class="muted">Уже с нами? <a href="{% url 'accounts:login' %}">Войти</a></p>
+</section>
+{% endblock %}
