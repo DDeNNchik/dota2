@@ -1,4 +1,12 @@
+from decimal import Decimal
+from uuid import uuid4
+
 from django.db import models
+
+
+def legacy_identifier():
+    """Value for a pre-Valve-catalogue column retained in existing SQLite files."""
+    return f'legacy-{uuid4().hex}'
 
 
 class ProTeam(models.Model):
@@ -53,6 +61,23 @@ class ProPlayer(models.Model):
     opendota_synced_at = models.DateTimeField('обновлено OpenDota', null=True, blank=True)
     last_seen_at = models.DateTimeField('последний раз в таблице', auto_now=True)
 
+    # The first local catalogue had these required columns. They stay hidden
+    # solely to keep existing SQLite databases and their old records intact.
+    legacy_nickname = models.CharField(max_length=64, unique=True, default=legacy_identifier, editable=False, db_column='nickname')
+    legacy_slug = models.SlugField(unique=True, default=legacy_identifier, editable=False, db_column='slug')
+    legacy_full_name = models.CharField(max_length=120, blank=True, editable=False, db_column='full_name')
+    legacy_photo = models.ImageField(upload_to='esports/players/', blank=True, editable=False, db_column='photo')
+    legacy_country = models.CharField(max_length=80, blank=True, editable=False, db_column='country')
+    legacy_role = models.CharField(max_length=20, default='mid', editable=False, db_column='role')
+    legacy_matches_played = models.PositiveIntegerField(default=0, editable=False, db_column='matches_played')
+    legacy_average_kills = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), editable=False, db_column='average_kills')
+    legacy_average_deaths = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), editable=False, db_column='average_deaths')
+    legacy_average_assists = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal('0.00'), editable=False, db_column='average_assists')
+    legacy_average_gpm = models.PositiveIntegerField(default=0, editable=False, db_column='average_gpm')
+    legacy_average_xpm = models.PositiveIntegerField(default=0, editable=False, db_column='average_xpm')
+    legacy_updated_at = models.DateTimeField(auto_now=True, editable=False, db_column='updated_at')
+    legacy_team = models.ForeignKey(ProTeam, on_delete=models.SET_NULL, related_name='+', null=True, blank=True, editable=False, db_column='team_id')
+
     class Meta:
         ordering = ('region', 'leaderboard_rank')
         constraints = [
@@ -98,6 +123,7 @@ class Tournament(models.Model):
     starts_at = models.DateField('начало')
     ends_at = models.DateField('окончание')
     description = models.TextField('описание', max_length=2_000, blank=True)
+    source_url = models.URLField('источник данных', max_length=500, blank=True)
     teams = models.ManyToManyField(ProTeam, related_name='tournaments', blank=True, verbose_name='команды')
 
     class Meta:

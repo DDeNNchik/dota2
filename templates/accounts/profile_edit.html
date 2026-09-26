@@ -3,6 +3,7 @@
 {% block content %}
 <section class="profile-editor">
   <div class="section-heading"><p class="eyebrow">Игровой профиль</p><h1>Расскажите о своей игре</h1><p>Все поля необязательны. На публичной странице отобразится только то, что вы заполните.</p></div>
+  <section class="steam-connect-card">{% if user.steam_account %}<div><strong>Steam is connected</strong><p>{{ user.steam_account.persona_name|default:user.steam_account.steam_id }}</p></div><a class="button button-small" href="{% url 'accounts:steam_stats' %}">My Dota stats</a>{% else %}<div><strong>Connect your Steam account</strong><p>Verify your Steam account to show your own Dota statistics.</p></div><a class="button button-small" href="{% url 'accounts:steam_connect' %}">Connect Steam</a>{% endif %}</section>
   <form class="profile-form" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
     {% for field in form %}
       <div class="field {% if field.name == 'description' %}field-wide{% endif %}{% if field.name == 'favorite_heroes' %}field-wide field-heroes{% endif %}{% if field.name == 'microphone_available' %}field-check{% endif %}">

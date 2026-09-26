@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Hero, Profile, Role
+from .models import Hero, Profile, Role, SteamAccount
 
 
 @admin.register(Role)
@@ -23,3 +23,10 @@ class ProfileAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__email', 'dota_nickname', 'steam_id')
     readonly_fields = ('created_at', 'updated_at')
     filter_horizontal = ('preferred_roles', 'favorite_heroes')
+
+
+@admin.register(SteamAccount)
+class SteamAccountAdmin(admin.ModelAdmin):
+    list_display = ('user', 'steam_id', 'persona_name', 'rank_tier', 'stats_updated_at')
+    search_fields = ('user__username', 'steam_id', 'persona_name')
+    readonly_fields = ('steam_id', 'account_id', 'created_at', 'stats_updated_at')

@@ -1,10 +1,8 @@
-from datetime import timedelta
-
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
 from .models import ProPlayer, Tournament
-from .services.opendota import ExternalDataError, refresh_player_stats, resolve_account_id
+from .services.opendota import ExternalDataError
 from .services.valve import sync_leaderboard
 
 
@@ -26,20 +24,15 @@ def pro_player_list(request):
 
 def pro_player_detail(request, pk):
     player = get_object_or_404(ProPlayer, pk=pk)
-    data_error = None
-    stale_before = timezone.now() - timedelta(hours=6)
-    if not player.account_id:
-        resolve_account_id(player)
-    if player.account_id and (not player.opendota_synced_at or player.opendota_synced_at < stale_before):
-        try:
-            refresh_player_stats(player)
-        except ExternalDataError:
-            data_error = 'OpenDota временно недоступен. Показаны последние сохранённые данные.'
-    return render(request, 'esports/pro_player_detail.html', {'player': player, 'data_error': data_error})
+    # Network requests do not belong to a page view: OpenDota can be slow or
+    # unavailable, and a click must always render the locally cached card.
+    # The sync_opendota_profiles command refreshes this data in the background.
+    return render(request, 'esports/pro_player_detail.html', {'player': player})
 
 
 def tournament_list(request):
-    return render(request, 'esports/tournament_list.html', {'tournaments': Tournament.objects.prefetch_related('teams')})
+    tournaments = Tournament.objects.filter(ends_at__gte=timezone.localdate()).exclude(status=Tournament.Status.COMPLETED).prefetch_related('teams')
+    return render(request, 'esports/tournament_list.html', {'tournaments': tournaments})
 
 
 def tournament_detail(request, slug):

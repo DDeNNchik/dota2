@@ -1,8 +1,34 @@
 {% extends 'base.html' %}
-{% block title %}Турниры — DotaForge{% endblock %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Турниры' %} — DotaForge{% endblock %}
 {% block content %}
-<section class="listing-page">
-  <div class="section-heading"><p class="eyebrow">Про-сцена</p><h1>Турниры</h1><p>Расписание, статусы и участники профессиональных турниров.</p></div>
-  {% if tournaments %}<div class="tournament-grid">{% for tournament in tournaments %}<article class="tournament-card"><div class="tournament-card-top"><span class="status status-{{ tournament.status }}">{{ tournament.get_status_display }}</span><span>{{ tournament.starts_at|date:'d.m.Y' }}</span></div><h2><a href="{% url 'esports:tournament_detail' tournament.slug %}">{{ tournament.name }}</a></h2><p class="muted">{{ tournament.location|default:'Локация уточняется' }}</p><dl class="compact-stats"><div><dt>Призовой фонд</dt><dd>${{ tournament.prize_pool }}</dd></div><div><dt>Команды</dt><dd>{{ tournament.teams.count }}</dd></div></dl></article>{% endfor %}</div>{% else %}<section class="empty-state"><h2>Турниров пока нет</h2><p>Добавьте их в Django Admin — каталог появится автоматически.</p></section>{% endif %}
+<section class="listing-page tournament-page">
+  <header class="section-heading">
+    <p class="eyebrow">{% tr 'Про-сцена' %}</p>
+    <h1>{% tr 'Турниры' %}</h1>
+    <p>{% tr 'Выберите турнир, чтобы посмотреть подробности и список команд.' %}</p>
+  </header>
+  {% if tournaments %}
+    <div class="tournament-list">
+      {% for tournament in tournaments %}
+        <a class="tournament-card tournament-card-link" href="{% url 'esports:tournament_detail' tournament.slug %}">
+          <div class="tournament-card-heading">
+            <div>
+              <p class="eyebrow">{% tr 'Турнир' %} {{ forloop.counter|stringformat:'02d' }}</p>
+              <h2>{{ tournament.name }}</h2>
+            </div>
+            <span class="status status-{{ tournament.status }}">{% tr tournament.get_status_display %}</span>
+          </div>
+          <div class="tournament-card-meta">
+            <span><small>{% tr 'Даты проведения' %}</small><strong>{{ tournament.starts_at|date:'DATE_FORMAT' }} — {{ tournament.ends_at|date:'DATE_FORMAT' }}</strong></span>
+            <span><small>{% tr 'Участники' %}</small><strong>{% if tournament.teams.count %}{{ tournament.teams.count }}{% else %}{% tr 'Состав уточняется' %}{% endif %}</strong></span>
+          </div>
+          <span class="tournament-card-action">{% tr 'Подробнее о турнире' %}<span aria-hidden="true">→</span></span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <section class="empty-state"><h2>{% tr 'Турниров пока нет' %}</h2><p>{% tr 'Скоро здесь появятся новые турниры.' %}</p></section>
+  {% endif %}
 </section>
 {% endblock %}

@@ -21,11 +21,14 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 
 from apps.accounts import views as account_views
+from apps.accounts.views_i18n import set_language
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('players/', TemplateView.as_view(template_name='players/hub.html'), name='players_hub'),
     path('accounts/', include('apps.accounts.urls')),
+    path('language/set/', set_language, name='set_language'),
     path('pro/', include('apps.esports.urls')),
     path('profile/edit/', account_views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', account_views.profile_detail, name='profile_detail'),

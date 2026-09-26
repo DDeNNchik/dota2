@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load l10n ui_i18n %}
+{% block title %}{% tr 'Моя статистика Dota' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="profile-page">
+  <div class="profile-hero">
+    {% if steam_account.avatar_url %}<img class="avatar" src="{{ steam_account.avatar_url }}" alt="">{% else %}<div class="avatar avatar-placeholder">S</div>{% endif %}
+    <div><p class="eyebrow">{% tr 'Подключённый аккаунт Steam' %}</p><h1>{{ steam_account.persona_name|default:user.username }}</h1><p class="dota-name">Steam ID: {{ steam_account.steam_id }}</p></div>
+  </div>
+  <section class="profile-section">
+    <div class="section-actions"><h2>{% tr 'Моя статистика Dota' %}</h2><form method="post" action="{% url 'accounts:steam_refresh' %}">{% csrf_token %}<button class="button button-small" type="submit">{% tr 'Обновить данные' %}</button></form></div>
+    <dl class="stats-grid">
+      <div><dt>{% tr 'Оценка MMR' %}</dt><dd>{{ steam_account.mmr_estimate|default:'—'|localize }}</dd></div>
+      <div><dt>{% tr 'Ранг' %}</dt><dd>{% tr steam_account.rank_label %}</dd></div>
+      <div><dt>{% tr 'Победы' %}</dt><dd>{{ steam_account.wins|localize }}</dd></div>
+      <div><dt>{% tr 'Поражения' %}</dt><dd>{{ steam_account.losses|localize }}</dd></div>
+      <div><dt>{% tr 'Доля побед' %}</dt><dd>{% if steam_account.win_rate is not None %}{{ steam_account.win_rate|localize }}%{% else %}—{% endif %}</dd></div>
+      <div><dt>{% tr 'Обновлено' %}</dt><dd>{% if steam_account.stats_updated_at %}{{ steam_account.stats_updated_at|date:'DATETIME_FORMAT' }}{% else %}{% tr 'Данных пока нет' %}{% endif %}</dd></div>
+    </dl>
+    {% if steam_account.profile_url %}<p class="external-link"><a href="{{ steam_account.profile_url }}" target="_blank" rel="noopener noreferrer">{% tr 'Открыть профиль Steam ↗' %}</a></p>{% endif %}
+  </section>
+  <section class="profile-section">
+    <h2>{% tr 'Последние матчи' %}</h2>
+    {% if steam_account.recent_matches %}
+      <div class="recent-matches">{% for match in steam_account.recent_matches %}<div><strong>{% if match.won %}{% tr 'Победа' %}{% else %}{% tr 'Поражение' %}{% endif %}</strong><span>{% tr 'Матч №' %}{{ match.match_id|localize }} · {{ match.kills|localize }}/{{ match.deaths|localize }}/{{ match.assists|localize }}</span></div>{% endfor %}</div>
+    {% elif steam_account.match_history_available is False %}
+      <p>{% tr 'OpenDota пока не может получить историю матчей этого аккаунта.' %} {% tr 'В Dota 2 откройте Настройки → Параметры → Дополнительные параметры и включите' %} <strong>{% tr 'Показывать общедоступные данные о матчах' %}</strong>. {% tr 'Сыграйте или завершите матч, затем вернитесь сюда и нажмите «Обновить данные».' %}</p>
+    {% else %}
+      <p>{% tr 'Недавние матчи пока недоступны в OpenDota. Попробуйте обновить данные позже.' %}</p>
+    {% endif %}
+  </section>
+  <form class="disconnect-form" method="post" action="{% url 'accounts:steam_disconnect' %}">{% csrf_token %}<button class="link-button" type="submit">{% tr 'Отключить аккаунт Steam' %}</button></form>
+</section>
+{% endblock %}

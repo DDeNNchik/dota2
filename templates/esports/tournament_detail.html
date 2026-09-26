@@ -1,5 +1,31 @@
 {% extends 'base.html' %}
+{% load l10n ui_i18n %}
 {% block title %}{{ tournament.name }} — DotaForge{% endblock %}
 {% block content %}
-<section class="listing-page"><a class="back-link" href="{% url 'esports:tournament_list' %}">← Все турниры</a><div class="tournament-detail"><p class="eyebrow">{{ tournament.get_status_display }}</p><h1>{{ tournament.name }}</h1><p class="muted">{{ tournament.starts_at|date:'d.m.Y' }} — {{ tournament.ends_at|date:'d.m.Y' }}</p><dl class="stats-grid"><div><dt>Призовой фонд</dt><dd>${{ tournament.prize_pool }}</dd></div><div><dt>Организатор</dt><dd>{{ tournament.organizer|default:'—' }}</dd></div><div><dt>Формат</dt><dd>{{ tournament.format|default:'—' }}</dd></div><div><dt>Локация</dt><dd>{{ tournament.location|default:'—' }}</dd></div></dl>{% if tournament.description %}<p class="tournament-description">{{ tournament.description|linebreaksbr }}</p>{% endif %}</div><section class="profile-section"><h2>Участники</h2>{% if tournament.teams.all %}<div class="team-tags">{% for team in tournament.teams.all %}<span>{{ team.name }}</span>{% endfor %}</div>{% else %}<p>Состав участников ещё не опубликован.</p>{% endif %}</section></section>
+<section class="listing-page tournament-page">
+  <a class="back-link" href="{% url 'esports:tournament_list' %}">← {% tr 'Все турниры' %}</a>
+  <article class="tournament-detail">
+    <div class="tournament-detail-heading">
+      <div><p class="eyebrow">{% tr 'Информация о турнире' %}</p><h1>{{ tournament.name }}</h1></div>
+      <span class="status status-{{ tournament.status }}">{% tr tournament.get_status_display %}</span>
+    </div>
+    <dl class="tournament-facts">
+      <div><dt>{% tr 'Даты проведения' %}</dt><dd>{{ tournament.starts_at|date:'DATE_FORMAT' }} — {{ tournament.ends_at|date:'DATE_FORMAT' }}</dd></div>
+      <div><dt>{% tr 'Призовой фонд' %}</dt><dd>{% if tournament.prize_pool %}${{ tournament.prize_pool|localize }}{% else %}—{% endif %}</dd></div>
+      <div><dt>{% tr 'Организатор' %}</dt><dd>{{ tournament.organizer|default:'—' }}</dd></div>
+      <div><dt>{% tr 'Формат' %}</dt><dd>{{ tournament.format|default:'—'|tournament_format }}</dd></div>
+      <div><dt>{% tr 'Место проведения' %}</dt><dd>{{ tournament.location|default:'—' }}</dd></div>
+    </dl>
+    {% if tournament.description %}<p class="tournament-description">{{ tournament.description|linebreaksbr }}</p>{% endif %}
+    {% if tournament.source_url %}<a class="tournament-source" href="{{ tournament.source_url }}" target="_blank" rel="noopener noreferrer">{% tr 'Источник данных: Liquipedia' %}<span aria-hidden="true">↗</span></a>{% endif %}
+  </article>
+  <section class="profile-section tournament-teams">
+    <div class="tournament-section-heading"><div><p class="eyebrow">{% tr 'Участники турнира' %}</p><h2>{% tr 'Команды' %}</h2></div><span class="team-count">{{ tournament.teams.count }}</span></div>
+    {% if tournament.teams.all %}
+      <div class="team-tags">{% for team in tournament.teams.all %}<span>{{ team.name }}</span>{% endfor %}</div>
+    {% else %}
+      <p>{% tr 'Состав участников ещё не опубликован.' %}</p>
+    {% endif %}
+  </section>
+</section>
 {% endblock %}

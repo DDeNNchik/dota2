@@ -47,17 +47,40 @@ def sync_leaderboard(region, limit=100, resolve=False, client=None):
 
     with transaction.atomic():
         for rank, entry in enumerate(entries, start=1):
-            player, _ = ProPlayer.objects.update_or_create(
+            leaderboard_name = (entry.get('name') or '')[:128]
+            player, created = ProPlayer.objects.get_or_create(
                 region=region,
                 leaderboard_rank=rank,
                 defaults={
-                    'leaderboard_name': (entry.get('name') or '')[:128],
+                    'leaderboard_name': leaderboard_name,
                     'team_tag': (entry.get('team_tag') or '')[:32],
                     'sponsor': (entry.get('sponsor') or '')[:64],
                     'country_code': (entry.get('country') or '')[:2].upper(),
                     'source_updated_at': source_updated_at,
                 },
             )
+            if not created:
+                # A leaderboard position is not a player identity.  When its
+                # occupant changes, discard the old OpenDota link and cached
+                # statistics before publishing the new Valve entry.
+                identity_changed = player.leaderboard_name != leaderboard_name
+                player.leaderboard_name = leaderboard_name
+                player.team_tag = (entry.get('team_tag') or '')[:32]
+                player.sponsor = (entry.get('sponsor') or '')[:64]
+                player.country_code = (entry.get('country') or '')[:2].upper()
+                player.source_updated_at = source_updated_at
+                if identity_changed:
+                    player.account_id = None
+                    player.avatar_url = ''
+                    player.profile_url = ''
+                    player.real_name = ''
+                    player.rank_tier = None
+                    player.leaderboard_rank_opendota = None
+                    player.mmr_estimate = None
+                    player.wins = 0
+                    player.losses = 0
+                    player.opendota_synced_at = None
+                player.save()
             synced.append(player)
         ProPlayer.objects.filter(region=region, leaderboard_rank__gt=len(entries)).delete()
 

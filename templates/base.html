@@ -1,6 +1,6 @@
-{% load static %}
+{% load static ui_i18n %}
 <!doctype html>
-<html lang="ru">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,23 +11,26 @@
 <body>
   <header class="site-header">
     <a class="brand" href="{% url 'home' %}">Dota<span>Forge</span></a>
-    <nav aria-label="Главная навигация">
-      <a href="{% url 'esports:pro_player_list' %}">Про-игроки</a><a href="{% url 'esports:tournament_list' %}">Турниры</a><a href="#">Игроки</a><a href="#">Команды</a><a href="#">Гайды</a>
+    <nav aria-label="{% tr 'Главная навигация' %}">
+      <a href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a><a href="{% url 'players_hub' %}">{% tr 'Игроки' %}</a><a href="#">{% tr 'Команды' %}</a><a href="#">{% tr 'Гайды' %}</a>
     </nav>
     <div class="account-menu">
+      <form class="language-switcher" method="post" action="{% url 'set_language' %}" aria-label="{% tr 'Выбор языка' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button name="language" value="ru" class="{% if LANGUAGE_CODE == 'ru' %}active{% endif %}" type="submit">RU</button><button name="language" value="en" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}" type="submit">EN</button><button name="language" value="uk" class="{% if LANGUAGE_CODE == 'uk' %}active{% endif %}" type="submit">UK</button></form>
       {% if user.is_authenticated %}
-        <a class="account-chip" href="{% url 'profile_detail' user.username %}" aria-label="Открыть профиль">
-          {% if current_profile.avatar %}
+        <a class="account-chip" href="{% url 'profile_detail' user.username %}" aria-label="{% tr 'Профиль' %}">
+          {% if current_steam_account.avatar_url %}
+            <img src="{{ current_steam_account.avatar_url }}" alt="" class="nav-avatar">
+          {% elif current_profile.avatar %}
             <img src="{{ current_profile.avatar.url }}" alt="" class="nav-avatar">
           {% else %}
             <span class="nav-avatar nav-avatar-placeholder">{{ user.username|slice:':1'|upper }}</span>
           {% endif %}
-          <span class="account-chip-text"><small>Профиль</small><strong>{% if current_profile.dota_nickname %}{{ current_profile.dota_nickname }}{% else %}{{ user.username }}{% endif %}</strong></span>
+          <span class="account-chip-text"><small>{% tr 'Профиль' %}</small><strong>{% if current_profile.dota_nickname %}{{ current_profile.dota_nickname }}{% else %}{{ user.username }}{% endif %}</strong></span>
         </a>
-        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button">Выйти</button></form>
+        <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="link-button">{% tr 'Выйти' %}</button></form>
       {% else %}
-        <a href="{% url 'accounts:login' %}">Войти</a>
-        <a class="button button-small" href="{% url 'accounts:register' %}">Регистрация</a>
+        <a href="{% url 'accounts:login' %}">{% tr 'Войти' %}</a>
+        <a class="button button-small" href="{% url 'accounts:register' %}">{% tr 'Регистрация' %}</a>
       {% endif %}
     </div>
   </header>

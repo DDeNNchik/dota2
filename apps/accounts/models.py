@@ -69,3 +69,41 @@ class Profile(models.Model):
 
     def __str__(self):
         return f'Профиль {self.user.username}'
+
+
+class SteamAccount(models.Model):
+    """A Steam identity verified through Steam OpenID, not a typed nickname."""
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='steam_account')
+    steam_id = models.PositiveBigIntegerField('SteamID64', unique=True)
+    account_id = models.PositiveBigIntegerField('Dota account ID', unique=True)
+    persona_name = models.CharField('имя Steam', max_length=128, blank=True)
+    avatar_url = models.URLField('аватар Steam', max_length=500, blank=True)
+    profile_url = models.URLField('ссылка Steam', max_length=500, blank=True)
+    rank_tier = models.PositiveSmallIntegerField('rank tier', null=True, blank=True)
+    mmr_estimate = models.PositiveIntegerField('оценка MMR', null=True, blank=True)
+    wins = models.PositiveIntegerField('победы', default=0)
+    losses = models.PositiveIntegerField('поражения', default=0)
+    recent_matches = models.JSONField('последние матчи', default=list, blank=True)
+    match_history_available = models.BooleanField('история матчей доступна', null=True, blank=True)
+    stats_updated_at = models.DateTimeField('статистика обновлена', null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'привязанный Steam-аккаунт'
+        verbose_name_plural = 'привязанные Steam-аккаунты'
+
+    def __str__(self):
+        return f'{self.user.username} — {self.steam_id}'
+
+    @property
+    def win_rate(self):
+        games = self.wins + self.losses
+        return round(self.wins * 100 / games, 1) if games else None
+
+    @property
+    def rank_label(self):
+        if not self.rank_tier:
+            return 'No data'
+        medals = {1: 'Herald', 2: 'Guardian', 3: 'Crusader', 4: 'Archon', 5: 'Legend', 6: 'Ancient', 7: 'Divine', 8: 'Immortal'}
+        return medals.get(self.rank_tier // 10, 'Unknown')

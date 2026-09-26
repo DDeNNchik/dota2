@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Игроки' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="players-hub">
+  <div class="section-heading">
+    <p class="eyebrow">DotaForge</p>
+    <h1>{% tr 'Игроки' %}</h1>
+    <p>{% tr 'Выберите, что хотите сделать.' %}</p>
+  </div>
+  <div class="hero-actions players-actions">
+    <button class="button" type="button">{% tr 'Найти профиль и статистику игрока' %}</button>
+    <button class="button button-ghost" type="button">{% tr 'Игроки сайта' %}</button>
+  </div>
+</section>
+{% endblock %}

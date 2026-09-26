@@ -1,4 +1,4 @@
-from .models import Profile
+from .models import Profile, SteamAccount
 
 
 def current_profile(request):
@@ -7,4 +7,5 @@ def current_profile(request):
         return {}
 
     profile, _ = Profile.objects.get_or_create(user=request.user)
-    return {'current_profile': profile}
+    steam_account = SteamAccount.objects.filter(user=request.user).first()
+    return {'current_profile': profile, 'current_steam_account': steam_account}

@@ -28,14 +28,13 @@ class ProfileForm(forms.ModelForm):
         model = Profile
         fields = (
             'avatar', 'description', 'country', 'age', 'dota_nickname', 'steam_id',
-            'mmr', 'preferred_roles', 'favorite_heroes', 'microphone_available', 'availability', 'timezone',
+            'preferred_roles', 'favorite_heroes', 'microphone_available', 'availability', 'timezone',
         )
         widgets = {
             'description': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Расскажите, какого тиммейта вы ищете…'}),
             'country': forms.TextInput(attrs={'placeholder': 'Например, Украина'}),
             'dota_nickname': forms.TextInput(attrs={'placeholder': 'Ваш никнейм в Dota 2'}),
             'steam_id': forms.URLInput(attrs={'placeholder': 'https://steamcommunity.com/id/...'}),
-            'mmr': forms.NumberInput(attrs={'min': 0, 'placeholder': 'Например, 4500'}),
             'preferred_roles': forms.CheckboxSelectMultiple(),
             'favorite_heroes': forms.CheckboxSelectMultiple(),
             'availability': forms.TextInput(attrs={'placeholder': 'Например, будни после 19:00'}),
