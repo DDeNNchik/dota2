@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{{ team.name }} — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page team-page">
+  <a class="back-link" href="{% url 'esports:pro_team_list' %}">← {% tr 'К командам' %}</a>
+  <header class="team-hero profile-section">
+    {% if team.logo_url %}<span class="team-hero-logo-wrap"><img class="team-hero-logo" src="{{ team.logo_url }}" alt="{{ team.name }}" width="104" height="104" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-hero-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>{% elif team.logo %}<span class="team-hero-logo-wrap"><img class="team-hero-logo" src="{{ team.logo.url }}" alt="{{ team.name }}" width="104" height="104" decoding="async" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-hero-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>{% else %}<span class="team-hero-fallback">{{ team.name|slice:':1'|upper }}</span>{% endif %}
+    <div><p class="eyebrow">{% tr 'Профессиональная команда' %}</p><h1>{{ team.name }}</h1>{% if team.source_url %}<a class="tournament-source" href="{{ team.source_url }}" target="_blank" rel="noopener noreferrer">{% tr 'Страница Liquipedia' %}<span aria-hidden="true">↗</span></a>{% endif %}</div>
+  </header>
+  <section class="profile-section team-roster-section">
+    <div class="tournament-section-heading"><div><p class="eyebrow">{% tr 'Состав команды' %}</p><h2>{% tr 'Игроки' %}</h2></div><span class="team-count">{{ team.roster.count }}</span></div>
+    {% if team.roster.all %}
+      <div class="roster-grid">
+        {% for member in team.roster.all %}
+          <article class="roster-card">
+            {% if member.photo_url %}<div class="roster-photo-wrap"><img class="roster-photo" src="{{ member.photo_url }}" alt="{{ member.nickname }}" loading="lazy" decoding="async" width="320" height="210" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><div class="roster-photo roster-photo-fallback" hidden>{{ member.nickname|slice:':1'|upper }}</div></div>{% else %}<div class="roster-photo roster-photo-fallback">{{ member.nickname|slice:':1'|upper }}</div>{% endif %}
+            <div class="roster-card-info"><h3>{{ member.nickname }}</h3>{% if member.real_name %}<p>{{ member.real_name }}</p>{% endif %}{% if member.role %}<span class="roster-role">{% tr 'Позиция' %} {{ member.role }}</span>{% endif %}</div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p>{% tr 'Состав команды пока не опубликован.' %}</p>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

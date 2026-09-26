@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Топ команд' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page tournament-page team-directory">
+  <div class="section-heading">
+    <p class="eyebrow">{% tr 'Рейтинг Liquipedia' %}</p>
+    <h1>{% tr 'Топ команд Dota 2' %}</h1>
+    <p>{% tr 'Список обновляется автоматически по рейтингу Liquipedia. Нажми на команду, чтобы открыть её состав.' %}</p>
+  </div>
+  {% if teams %}
+    <div class="team-directory-list">
+      {% for team in teams %}
+        <a class="team-card team-rank-row" href="{% url 'esports:pro_team_detail' team.slug %}">
+          <span class="team-rank-number">#{{ team.ranking_position }}</span>
+          {% if team.logo_url %}
+            <span class="team-logo-wrap"><img src="{{ team.logo_url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
+          {% elif team.logo %}
+            <span class="team-logo-wrap"><img src="{{ team.logo.url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
+          {% else %}
+            <span class="team-logo-fallback">{{ team.name|slice:':1'|upper }}</span>
+          {% endif %}
+          <span class="team-rank-name">{{ team.name }}{% if team.region %}<small>{{ team.region|team_region }}</small>{% endif %}</span>
+          <span class="team-rating"><small>{% tr 'Очки' %}</small><strong>{{ team.rating }}</strong></span>
+          <span class="team-card-arrow" aria-hidden="true">→</span>
+        </a>
+      {% endfor %}
+    </div>
+    <a class="tournament-source" href="https://liquipedia.net/dota2/Portal:Rankings" target="_blank" rel="noopener noreferrer">{% tr 'Источник данных: Liquipedia' %}<span aria-hidden="true">↗</span></a>
+  {% else %}
+    <section class="empty-state team-directory-empty"><h2>{% tr 'Рейтинг команд пока загружается' %}</h2><p>{% tr 'Загляни сюда позже — список появится после синхронизации.' %}</p></section>
+  {% endif %}
+</section>
+{% endblock %}

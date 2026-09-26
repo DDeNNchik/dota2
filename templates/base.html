@@ -6,13 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="DotaForge — социальная платформа для игроков Dota 2.">
   <title>{% block title %}DotaForge{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20260926-team-directory">
 </head>
 <body>
   <header class="site-header">
     <a class="brand" href="{% url 'home' %}">Dota<span>Forge</span></a>
     <nav aria-label="{% tr 'Главная навигация' %}">
-      <a href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a><a href="{% url 'players_hub' %}">{% tr 'Игроки' %}</a><a href="#">{% tr 'Команды' %}</a><a href="#">{% tr 'Гайды' %}</a>
+      <a href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a><a href="{% url 'players_hub' %}">{% tr 'Игроки' %}</a><a href="{% url 'esports:pro_team_list' %}">{% tr 'Команды' %}</a><a href="#">{% tr 'Гайды' %}</a>
     </nav>
     <div class="account-menu">
       <form class="language-switcher" method="post" action="{% url 'set_language' %}" aria-label="{% tr 'Выбор языка' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button name="language" value="ru" class="{% if LANGUAGE_CODE == 'ru' %}active{% endif %}" type="submit">RU</button><button name="language" value="en" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}" type="submit">EN</button><button name="language" value="uk" class="{% if LANGUAGE_CODE == 'uk' %}active{% endif %}" type="submit">UK</button></form>

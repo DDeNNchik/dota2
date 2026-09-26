@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
-from .models import ProPlayer, Tournament
+from .models import ProPlayer, ProTeam, Tournament
 from .services.opendota import ExternalDataError
 from .services.valve import sync_leaderboard
 
@@ -38,3 +38,13 @@ def tournament_list(request):
 def tournament_detail(request, slug):
     tournament = get_object_or_404(Tournament.objects.prefetch_related('teams'), slug=slug)
     return render(request, 'esports/tournament_detail.html', {'tournament': tournament})
+
+
+def pro_team_list(request):
+    teams = ProTeam.objects.filter(ranking_position__isnull=False).order_by('ranking_position')
+    return render(request, 'esports/pro_team_list.html', {'teams': teams})
+
+
+def pro_team_detail(request, slug):
+    team = get_object_or_404(ProTeam.objects.prefetch_related('roster'), slug=slug)
+    return render(request, 'esports/pro_team_detail.html', {'team': team})

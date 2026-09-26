@@ -39,9 +39,9 @@
 .tournament-detail { margin-top:20px; padding:30px; }
 .tournament-detail h1 { margin:0; font-size:clamp(32px, 5vw, 48px); line-height:1.08; }
 .tournament-facts { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:0 26px; margin:28px 0 0; border-top:1px solid var(--line); }
-.tournament-facts div { padding:17px 0; border-bottom:1px solid var(--line); }
+.tournament-facts div { min-width:0; padding:17px 0; border-bottom:1px solid var(--line); }
 .tournament-facts dt { color:var(--muted); font-size:13px; }
-.tournament-facts dd { margin-top:5px; font-size:16px; }
+.tournament-facts dd { min-width:0; margin-top:5px; font-size:16px; line-height:1.45; overflow-wrap:anywhere; }
 .tournament-source { display:inline-flex; align-items:center; gap:9px; margin-top:24px; color:#ff6568; font-weight:700; }
 .tournament-teams { margin-top:18px; }
 .tournament-section-heading { align-items:center; margin-bottom:20px; }
@@ -58,3 +58,47 @@
   .tournament-detail-heading { flex-direction:column; gap:12px; }
   .tournament-facts { grid-template-columns:1fr; }
 }
+
+/* Liquipedia team cards and player rosters. */
+.team-card-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:12px; }
+.team-card { display:flex; min-width:0; align-items:center; gap:12px; padding:12px; border:1px solid var(--line); border-radius:8px; background:#111319; color:var(--text); text-decoration:none; transition:transform .16s ease, border-color .16s ease, background .16s ease; }
+.team-card:hover { transform:translateY(-2px); border-color:#743139; background:#1b1c24; }
+.team-logo-wrap { display:grid; flex:0 0 48px; width:48px; height:48px; place-items:center; border-radius:7px; background:#e8e9ed; }
+.team-card img,.team-logo-fallback { grid-area:1 / 1; display:grid; width:48px; height:48px; place-items:center; border-radius:7px; object-fit:contain; background:#20222b; }
+.team-card .team-logo-fallback { z-index:0; }
+.team-logo-wrap img { z-index:1; background:transparent; filter:drop-shadow(0 0 1px #52535b); }
+.team-hero-logo-wrap { display:grid; flex:0 0 104px; width:104px; height:104px; place-items:center; border-radius:12px; background:#e8e9ed; }
+.team-hero-logo,.team-hero-fallback { grid-area:1 / 1; display:grid; width:104px; height:104px; place-items:center; border-radius:12px; object-fit:contain; background:#20222b; }
+.team-hero-logo { z-index:1; }
+.team-hero-fallback[hidden],.roster-photo-fallback[hidden],.team-logo-fallback[hidden] { display:none !important; }
+.team-logo-fallback { color:#f5f5f7; font-size:22px; font-weight:850; }
+.team-card-name { min-width:0; font-weight:700; line-height:1.3; overflow-wrap:break-word; }
+.team-card-arrow { margin-left:auto; color:#ff6568; font-size:19px; }
+.team-hero { display:flex; align-items:center; gap:24px; margin-top:20px; }
+.team-hero-logo,.team-hero-fallback { display:grid; flex:0 0 104px; width:104px; height:104px; place-items:center; border-radius:12px; object-fit:contain; background:#20222b; }
+.team-hero-logo { background:transparent; filter:drop-shadow(0 0 1px #52535b); }
+.team-hero-fallback { color:#fff; font-size:46px; font-weight:850; }
+.team-hero h1 { margin:0; font-size:clamp(32px, 5vw, 48px); }
+.team-hero .tournament-source { margin-top:12px; }
+.team-roster-section { margin-top:20px; }
+.roster-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:14px; }
+.roster-card { overflow:hidden; border:1px solid var(--line); border-radius:9px; background:#111319; }
+.roster-photo-wrap { position:relative; height:210px; background:linear-gradient(135deg, #262833, #171820); }
+.roster-photo { display:block; width:100%; height:210px; object-fit:cover; object-position:center 20%; background:linear-gradient(135deg, #262833, #171820); }
+.roster-photo-fallback { display:grid; place-items:center; color:#fff; font-size:60px; font-weight:850; }
+.roster-card-info { display:grid; gap:6px; padding:13px 14px 15px; }
+.roster-card-info h3 { margin:0; font-size:18px; }
+.roster-card-info p { margin:0; color:var(--muted); font-size:13px; }
+.roster-role { color:#ff9a9c; font-size:12px; font-weight:750; }
+.team-directory .section-heading { margin-bottom:28px; }
+.team-directory .section-heading h1 { font-size:clamp(34px, 5vw, 52px); }
+.team-directory-list { display:grid; grid-template-columns:minmax(0, 860px); gap:10px; margin-top:28px; }
+.team-rank-row { display:grid; grid-template-columns:52px 48px minmax(0, 1fr) 90px 18px; gap:14px; padding:12px 16px; }
+.team-rank-number { color:#ff6568; font-size:18px; font-weight:850; }
+.team-rank-name { display:grid; min-width:0; gap:3px; font-weight:750; overflow-wrap:anywhere; }
+.team-rank-name small,.team-rating small { color:var(--muted); font-size:12px; }
+.team-rating { display:grid; justify-items:end; line-height:1.25; }
+.team-rating strong { font-size:16px; }
+.team-directory-empty { max-width:860px; }
+@media (max-width:600px) { .team-rank-row { grid-template-columns:34px 38px minmax(0, 1fr) 55px 12px; gap:8px; padding:10px; } .team-rank-row .team-logo-wrap,.team-rank-row .team-logo-fallback,.team-rank-row img { width:38px; height:38px; } .team-rank-number { font-size:15px; } .team-rating strong { font-size:14px; } }
+@media (max-width:600px) { .team-card-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); } .team-card { gap:8px; padding:9px; } .team-logo-wrap,.team-card img,.team-logo-fallback { flex-basis:38px; width:38px; height:38px; } .team-hero { align-items:flex-start; gap:15px; } .team-hero-logo-wrap,.team-hero-logo,.team-hero-fallback { flex-basis:72px; width:72px; height:72px; } .roster-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); gap:9px; } .roster-photo-wrap,.roster-photo { height:170px; } }

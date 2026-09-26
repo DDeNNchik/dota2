@@ -22,6 +22,8 @@ TRANSLATIONS = {
         'Выберите, что хотите сделать.': 'Choose what you want to do.', 'Найти профиль и статистику игрока': 'Find a player profile and statistics', 'По ссылке Steam или игровому нику': 'By Steam link or in-game nickname', 'Игроки сайта': 'Site players', 'Профили зарегистрированных пользователей DotaForge': 'Profiles of registered DotaForge users',
         'Про-сцена': 'Pro scene', 'Выбор языка': 'Language selector', 'Выберите турнир, чтобы посмотреть подробности и список команд.': 'Choose a tournament to view details and participating teams.', 'Турнир': 'Tournament', 'Даты проведения': 'Dates', 'Состав уточняется': 'Teams to be announced', 'Подробнее о турнире': 'Tournament details', 'Скоро здесь появятся новые турниры.': 'New tournaments will appear here soon.', 'Информация о турнире': 'Tournament information', 'Призовой фонд': 'Prize pool', 'Организатор': 'Organizer', 'Формат': 'Format', 'Место проведения': 'Location', 'Источник данных: Liquipedia': 'Source: Liquipedia', 'Участники турнира': 'Tournament participants', 'Состав участников ещё не опубликован.': 'The participant list has not been published yet.', 'Скоро': 'Upcoming', 'Идёт сейчас': 'Ongoing', 'Завершён': 'Completed',
         'Подключённый аккаунт Steam': 'Connected Steam account', 'Моя статистика Dota': 'My Dota statistics', 'Обновить данные': 'Refresh data', 'Доля побед': 'Win rate', 'Обновлено': 'Updated', 'Данных пока нет': 'No data yet', 'Открыть профиль Steam ↗': 'Open Steam profile ↗', 'Последние матчи': 'Recent matches', 'Победа': 'Win', 'Поражение': 'Loss', 'Матч №': 'Match #', 'OpenDota пока не может получить историю матчей этого аккаунта.': 'OpenDota cannot access this account’s full match history.', 'В Dota 2 откройте Настройки → Параметры → Дополнительные параметры и включите': 'In Dota 2, open Settings → Options → Advanced Options and enable', 'Показывать общедоступные данные о матчах': 'Expose Public Match Data', 'Сыграйте или завершите матч, затем вернитесь сюда и нажмите «Обновить данные».': 'Play or finish a match, then return here and press “Refresh data”.', 'Недавние матчи пока недоступны в OpenDota. Попробуйте обновить данные позже.': 'No recent matches are available from OpenDota yet. Try refreshing later.', 'Отключить аккаунт Steam': 'Disconnect Steam account',
+        'К турнирам': 'Back to tournaments', 'К командам': 'Back to teams', 'Профессиональная команда': 'Professional team', 'Страница Liquipedia': 'Liquipedia page', 'Состав команды': 'Team roster', 'Позиция': 'Position', 'Состав команды пока не опубликован.': 'The team roster has not been published yet.',
+        'Топ команд': 'Top teams', 'Топ команд Dota 2': 'Top Dota 2 teams', 'Рейтинг Liquipedia': 'Liquipedia ranking', 'Список обновляется автоматически по рейтингу Liquipedia. Нажми на команду, чтобы открыть её состав.': 'This list updates automatically from Liquipedia rankings. Select a team to view its roster.', 'Очки': 'Points', 'Рейтинг команд пока загружается': 'Team rankings are loading', 'Загляни сюда позже — список появится после синхронизации.': 'Check back later—the list will appear after the next sync.',
     },
     'uk': {
         'Про-игроки': 'Про-гравці', 'Турниры': 'Турніри', 'Игроки': 'Гравці', 'Команды': 'Команди', 'Гайды': 'Гайди',
@@ -40,6 +42,8 @@ TRANSLATIONS = {
         'Выберите, что хотите сделать.': 'Оберіть, що хочете зробити.', 'Найти профиль и статистику игрока': 'Знайти профіль і статистику гравця', 'По ссылке Steam или игровому нику': 'За посиланням Steam або ігровим ніком', 'Игроки сайта': 'Гравці сайту', 'Профили зарегистрированных пользователей DotaForge': 'Профілі зареєстрованих користувачів DotaForge',
         'Про-сцена': 'Про-сцена', 'Выбор языка': 'Вибір мови', 'Выберите турнир, чтобы посмотреть подробности и список команд.': 'Оберіть турнір, щоб переглянути деталі та список команд.', 'Турнир': 'Турнір', 'Даты проведения': 'Дати проведення', 'Состав уточняется': 'Склад уточнюється', 'Подробнее о турнире': 'Детальніше про турнір', 'Скоро здесь появятся новые турниры.': 'Незабаром тут з’являться нові турніри.', 'Информация о турнире': 'Інформація про турнір', 'Призовой фонд': 'Призовий фонд', 'Организатор': 'Організатор', 'Формат': 'Формат', 'Место проведения': 'Місце проведення', 'Источник данных: Liquipedia': 'Джерело даних: Liquipedia', 'Участники турнира': 'Учасники турніру', 'Состав участников ещё не опубликован.': 'Список учасників ще не опубліковано.', 'Скоро': 'Незабаром', 'Идёт сейчас': 'Триває', 'Завершён': 'Завершено',
         'Подключённый аккаунт Steam': 'Підключений акаунт Steam', 'Моя статистика Dota': 'Моя статистика Dota', 'Обновить данные': 'Оновити дані', 'Доля побед': 'Відсоток перемог', 'Обновлено': 'Оновлено', 'Данных пока нет': 'Даних поки немає', 'Открыть профиль Steam ↗': 'Відкрити профіль Steam ↗', 'Последние матчи': 'Останні матчі', 'Победа': 'Перемога', 'Поражение': 'Поразка', 'Матч №': 'Матч №', 'OpenDota пока не может получить историю матчей этого аккаунта.': 'OpenDota поки не може отримати історію матчів цього акаунта.', 'В Dota 2 откройте Настройки → Параметры → Дополнительные параметры и включите': 'У Dota 2 відкрийте Налаштування → Параметри → Додаткові параметри та ввімкніть', 'Показывать общедоступные данные о матчах': 'Показувати загальнодоступні дані про матчі', 'Сыграйте или завершите матч, затем вернитесь сюда и нажмите «Обновить данные».': 'Зіграйте або завершіть матч, потім поверніться сюди та натисніть «Оновити дані».', 'Недавние матчи пока недоступны в OpenDota. Попробуйте обновить данные позже.': 'Нещодавні матчі поки недоступні в OpenDota. Спробуйте оновити дані пізніше.', 'Отключить аккаунт Steam': 'Від’єднати акаунт Steam',
+        'К турнирам': 'До турнірів', 'К командам': 'До команд', 'Профессиональная команда': 'Професійна команда', 'Страница Liquipedia': 'Сторінка Liquipedia', 'Состав команды': 'Склад команди', 'Позиция': 'Позиція', 'Состав команды пока не опубликован.': 'Склад команди ще не опубліковано.',
+        'Топ команд': 'Топ команд', 'Топ команд Dota 2': 'Топ команд Dota 2', 'Рейтинг Liquipedia': 'Рейтинг Liquipedia', 'Список обновляется автоматически по рейтингу Liquipedia. Нажми на команду, чтобы открыть её состав.': 'Список автоматично оновлюється за рейтингом Liquipedia. Натисни на команду, щоб переглянути її склад.', 'Очки': 'Бали', 'Рейтинг команд пока загружается': 'Рейтинг команд ще завантажується', 'Загляни сюда позже — список появится после синхронизации.': 'Зайди пізніше — список з’явиться після синхронізації.',
     },
 }
 
@@ -56,18 +60,21 @@ def tournament_format(value):
         return value
     terms = {
         'ru': [
+            ('swiss group stage', 'Швейцарский этап'), ('double-elimination playoffs', 'Плей-офф с двойным выбыванием'),
             ('round-robin', 'Круговой формат'), ('group stage', 'Групповой этап'),
             ('double-elimination', 'Двойное выбывание'), ('single-elimination', 'Одиночное выбывание'),
             ('playoffs', 'Плей-офф'), ('play-in', 'Плей-ин'), ('swiss', 'Швейцарская система'),
         ],
         'en': [
+            ('swiss group stage', 'Swiss stage'), ('double-elimination playoffs', 'Double-elimination playoffs'),
             ('round-robin', 'Round-robin'), ('group stage', 'Group stage'),
             ('double-elimination', 'Double elimination'), ('single-elimination', 'Single elimination'),
             ('playoffs', 'Playoffs'), ('play-in', 'Play-in'), ('swiss', 'Swiss'),
         ],
         'uk': [
+            ('swiss group stage', 'Швейцарський етап'), ('double-elimination playoffs', 'Плей-оф з подвійним вибуванням'),
             ('round-robin', 'Круговий формат'), ('group stage', 'Груповий етап'),
-            ('double-elimination', 'Сітка з вибуванням після двох поразок'), ('single-elimination', 'Сітка на вибування'),
+            ('double-elimination', 'Подвійне вибування'), ('single-elimination', 'Вибування'),
             ('playoffs', 'Плей-оф'), ('play-in', 'Плей-ін'), ('swiss', 'Швейцарська система'),
         ],
     }.get(language, [])
@@ -75,3 +82,18 @@ def tournament_format(value):
     for source, translated in terms:
         value = re.sub(re.escape(source), translated, value, flags=re.IGNORECASE)
     return value
+
+
+@register.filter
+def team_region(value):
+    translations = {
+        'ru': {
+            'Europe': 'Европа', 'South America': 'Южная Америка', 'North America': 'Северная Америка',
+            'Southeast Asia': 'Юго-Восточная Азия', 'China': 'Китай', 'CIS': 'СНГ',
+        },
+        'uk': {
+            'Europe': 'Європа', 'South America': 'Південна Америка', 'North America': 'Північна Америка',
+            'Southeast Asia': 'Південно-Східна Азія', 'China': 'Китай', 'CIS': 'СНД',
+        },
+    }
+    return translations.get(get_language(), {}).get(value, value)

@@ -22,7 +22,7 @@
   <section class="profile-section tournament-teams">
     <div class="tournament-section-heading"><div><p class="eyebrow">{% tr 'Участники турнира' %}</p><h2>{% tr 'Команды' %}</h2></div><span class="team-count">{{ tournament.teams.count }}</span></div>
     {% if tournament.teams.all %}
-      <div class="team-tags">{% for team in tournament.teams.all %}<span>{{ team.name }}</span>{% endfor %}</div>
+      <div class="team-card-grid">{% for team in tournament.teams.all %}<a class="team-card" href="{% url 'esports:pro_team_detail' team.slug %}">{% if team.logo_url %}<span class="team-logo-wrap"><img src="{{ team.logo_url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>{% elif team.logo %}<span class="team-logo-wrap"><img src="{{ team.logo.url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>{% else %}<span class="team-logo-fallback">{{ team.name|slice:':1'|upper }}</span>{% endif %}<span class="team-card-name">{{ team.name }}</span><span class="team-card-arrow" aria-hidden="true">→</span></a>{% endfor %}</div>
     {% else %}
       <p>{% tr 'Состав участников ещё не опубликован.' %}</p>
     {% endif %}

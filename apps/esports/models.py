@@ -10,14 +10,17 @@ def legacy_identifier():
 
 
 class ProTeam(models.Model):
-    """A professional team. Tournament data will be synchronised from datdota."""
+    """A professional team with cached Liquipedia ranking and roster data."""
 
     name = models.CharField('название', max_length=100, unique=True)
     slug = models.SlugField('URL-идентификатор', unique=True)
     short_name = models.CharField('краткое название', max_length=16, blank=True)
     logo = models.ImageField('логотип', upload_to='esports/teams/', blank=True)
+    logo_url = models.URLField('логотип Liquipedia', max_length=500, blank=True)
+    source_url = models.URLField('страница Liquipedia', max_length=500, blank=True)
     region = models.CharField('регион', max_length=80, blank=True)
     rating = models.PositiveIntegerField('рейтинг', default=0)
+    ranking_position = models.PositiveSmallIntegerField('место в рейтинге Liquipedia', null=True, blank=True)
     description = models.TextField('описание', max_length=1_000, blank=True)
 
     class Meta:
@@ -27,6 +30,25 @@ class ProTeam(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProTeamMember(models.Model):
+    team = models.ForeignKey(ProTeam, on_delete=models.CASCADE, related_name='roster')
+    nickname = models.CharField('игровой ник', max_length=128)
+    real_name = models.CharField('имя', max_length=128, blank=True)
+    role = models.CharField('позиция', max_length=32, blank=True)
+    photo_url = models.URLField('фото Liquipedia', max_length=500, blank=True)
+    source_url = models.URLField('страница Liquipedia', max_length=500, blank=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+
+    class Meta:
+        ordering = ('sort_order', 'nickname')
+        constraints = [models.UniqueConstraint(fields=('team', 'nickname'), name='unique_pro_team_member_nickname')]
+        verbose_name = 'игрок профессиональной команды'
+        verbose_name_plural = 'игроки профессиональной команды'
+
+    def __str__(self):
+        return f'{self.nickname} — {self.team.name}'
 
 
 class ProPlayer(models.Model):

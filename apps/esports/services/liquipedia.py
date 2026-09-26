@@ -4,9 +4,9 @@ from datetime import date, datetime
 from html.parser import HTMLParser
 import json
 import re
+import time
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
-from urllib.parse import unquote, urlparse
+from urllib.parse import quote, unquote, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from django.utils.text import slugify
@@ -59,6 +59,51 @@ class _TournamentTableParser(HTMLParser):
             self._cell['text'] += data
             if self._anchor is not None:
                 self._anchor['text'] += data
+
+
+class _TeamRankingParser(HTMLParser):
+    """Extract ranked teams from Liquipedia's public rankings table."""
+
+    def __init__(self):
+        super().__init__()
+        self.rows = []
+        self._row = None
+        self._cell = None
+        self._anchor = None
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == 'tr':
+            classes = attrs.get('class', '')
+            if 'row--body' in classes and 'graph-row' not in classes:
+                self._row = {}
+        elif tag == 'td' and self._row is not None:
+            key = attrs.get('data-ranking-table-cell')
+            if key in {'rank', 'team', 'rating', 'region'}:
+                self._cell = {'key': key, 'text': '', 'title': '', 'href': '', 'image': '', 'srcset': ''}
+        elif self._cell is not None:
+            if tag == 'a':
+                self._anchor = attrs
+            elif tag == 'img' and self._cell['key'] == 'team' and not self._cell['image']:
+                self._cell['image'] = attrs.get('src', '')
+                self._cell['srcset'] = attrs.get('srcset', '')
+
+    def handle_endtag(self, tag):
+        if tag == 'a' and self._anchor is not None and self._cell and self._cell['key'] == 'team':
+            self._cell['title'] = self._anchor.get('title', '')
+            self._cell['href'] = self._anchor.get('href', '')
+            self._anchor = None
+        elif tag == 'td' and self._cell is not None:
+            key = self._cell.pop('key')
+            self._row[key] = self._cell
+            self._cell = None
+        elif tag == 'tr' and self._row is not None:
+            self.rows.append(self._row)
+            self._row = None
+
+    def handle_data(self, data):
+        if self._cell is not None:
+            self._cell['text'] += data
 
 
 def _parse_date_range(value):
@@ -148,10 +193,77 @@ def fetch_tournaments(contact_email):
     return results
 
 
+def fetch_team_rankings(contact_email, limit=100):
+    """Fetch Liquipedia's current Dota 2 team ranking and logos."""
+    params = urlencode({'action': 'parse', 'page': 'Portal:Rankings', 'prop': 'text', 'format': 'json'})
+    request = Request(
+        f'https://liquipedia.net/dota2/api.php?{params}',
+        headers={
+            'User-Agent': f'DotaForge/1.0 (https://liquipedia.net/dota2/Portal:Rankings; {contact_email})',
+            'Accept-Encoding': 'gzip',
+        },
+    )
+    try:
+        with urlopen(request, timeout=25) as response:
+            import gzip
+            body = response.read()
+            if response.headers.get('Content-Encoding') == 'gzip':
+                body = gzip.decompress(body)
+        payload = json.loads(body)
+    except (HTTPError, URLError, TimeoutError, ValueError, OSError) as error:
+        raise LiquipediaError('Liquipedia team ranking request failed') from error
+
+    html = (payload.get('parse') or {}).get('text', {}).get('*')
+    if not html:
+        raise LiquipediaError('Liquipedia returned no team ranking')
+    parser = _TeamRankingParser()
+    parser.feed(html)
+    teams = []
+    for row in parser.rows:
+        try:
+            rank = int(row.get('rank', {}).get('text', '').strip())
+            rating = int(float(row.get('rating', {}).get('text', '').strip()))
+        except (ValueError, TypeError):
+            continue
+        team_cell = row.get('team', {})
+        name = (team_cell.get('title') or '').strip()
+        page_path = team_cell.get('href', '')
+        if not name or not page_path.startswith('/dota2/'):
+            continue
+        image = team_cell.get('image') or ''
+        srcset = team_cell.get('srcset') or ''
+        candidates = []
+        for candidate in srcset.split(','):
+            parts = candidate.strip().split()
+            if len(parts) == 2 and parts[1].endswith('x'):
+                try:
+                    candidates.append((float(parts[1][:-1]), parts[0]))
+                except ValueError:
+                    pass
+        if candidates:
+            image = max(candidates)[1]
+        if image.startswith('/'):
+            image = f'https://liquipedia.net{image}'
+        teams.append({
+            'rank': rank,
+            'name': name,
+            'rating': rating,
+            'region': row.get('region', {}).get('text', '').strip(),
+            'source_url': f"https://liquipedia.net{page_path}",
+            'logo_url': image,
+        })
+        if len(teams) >= limit:
+            break
+    if not teams:
+        raise LiquipediaError('Liquipedia returned no parseable ranked teams')
+    return teams
+
+
 def fetch_tournament_details(records, contact_email):
     """Fetch tournament wikitext in one batched MediaWiki API request."""
     if not records:
         return {}
+    time.sleep(2)
     titles = [unquote(urlparse(record['source_url']).path.removeprefix('/dota2/')).replace('_', ' ') for record in records]
     params = urlencode({
         'action': 'query', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main',
@@ -198,3 +310,169 @@ def fetch_tournament_details(records, contact_email):
             'participants': participants,
         }
     return results
+
+
+def _image_filename(value):
+    """Extract a clean file title from an infobox value (comments often follow it)."""
+    value = re.split(r'<!--|<br\s*/?>', value or '', maxsplit=1, flags=re.I)[0]
+    value = re.sub(r'<[^>]+>', '', value).strip().replace('_', ' ')
+    value = re.sub(r'^(?:File|Image)\s*:\s*', '', value, flags=re.I)
+    return value.strip(' []')
+
+
+def _fetch_image_urls(filenames, contact_email):
+    """Resolve Liquipedia file titles to appropriately sized thumbnails."""
+    filenames = list(dict.fromkeys(name for name in filenames if name))
+    urls = {}
+    for offset in range(0, len(filenames), 40):
+        if offset:
+            time.sleep(2)
+        params = urlencode({
+            'action': 'query', 'prop': 'imageinfo', 'iiprop': 'url', 'iiurlwidth': 480,
+            'titles': '|'.join(f'File:{name}' for name in filenames[offset:offset + 40]),
+            'format': 'json', 'formatversion': '2',
+        })
+        request = Request(
+            f'https://liquipedia.net/dota2/api.php?{params}',
+            headers={
+                'User-Agent': f'DotaForge/1.0 (https://liquipedia.net/dota2/Portal:Tournaments; {contact_email})',
+                'Accept-Encoding': 'gzip',
+            },
+        )
+        try:
+            with urlopen(request, timeout=35) as response:
+                import gzip
+                body = response.read()
+                if response.headers.get('Content-Encoding') == 'gzip':
+                    body = gzip.decompress(body)
+            payload = json.loads(body)
+        except (HTTPError, URLError, TimeoutError, ValueError, OSError) as error:
+            raise LiquipediaError('Liquipedia image lookup request failed') from error
+        for page in (payload.get('query') or {}).get('pages', []):
+            imageinfo = page.get('imageinfo') or []
+            if not imageinfo:
+                continue
+            image = imageinfo[0]
+            url = image.get('thumburl') or image.get('url', '')
+            file_title = page.get('title', '').partition(':')[2]
+            if file_title and url:
+                urls[file_title.casefold()] = url
+    return urls
+
+
+def _fetch_wikitext(titles, contact_email):
+    """Retrieve pages in API-sized batches with Liquipedia's request spacing."""
+    pages = []
+    for offset in range(0, len(titles), 40):
+        if offset:
+            time.sleep(2)
+        params = urlencode({
+            'action': 'query', 'prop': 'revisions', 'rvprop': 'content', 'rvslots': 'main',
+            'titles': '|'.join(titles[offset:offset + 40]), 'format': 'json', 'formatversion': '2',
+        })
+        request = Request(
+            f'https://liquipedia.net/dota2/api.php?{params}',
+            headers={
+                'User-Agent': f'DotaForge/1.0 (https://liquipedia.net/dota2/Portal:Tournaments; {contact_email})',
+                'Accept-Encoding': 'gzip',
+            },
+        )
+        try:
+            with urlopen(request, timeout=35) as response:
+                import gzip
+                body = response.read()
+                if response.headers.get('Content-Encoding') == 'gzip':
+                    body = gzip.decompress(body)
+            payload = json.loads(body)
+        except (HTTPError, URLError, TimeoutError, ValueError, OSError) as error:
+            raise LiquipediaError('Liquipedia team or player page request failed') from error
+        pages.extend((payload.get('query') or {}).get('pages', []))
+    return pages
+
+
+def fetch_team_profiles(teams, contact_email):
+    """Read Liquipedia team logos and active rosters, then player portrait files."""
+    teams = list(teams)
+    if not teams:
+        return {}
+    time.sleep(2)
+    pages = _fetch_wikitext([team.name for team in teams], contact_email)
+    profiles = {}
+    people = {}
+    filenames = []
+    for page in pages:
+        revisions = page.get('revisions') or []
+        if not revisions:
+            continue
+        content = (revisions[0].get('slots') or {}).get('main', {}).get('content', '')
+        title = page.get('title', '')
+        infobox = re.search(r'\{\{Infobox team(?P<body>.*?)^\}\}', content, re.S | re.M)
+        logo = ''
+        if infobox:
+            match = re.search(r'^\|image\s*=\s*([^\n|]+)', infobox.group('body'), re.M)
+            logo = _image_filename(match.group(1)) if match else ''
+            if logo:
+                filenames.append(logo)
+
+        active = re.search(
+            r'===\s*(?:Active(?: Roster)?)\s*===(?P<body>.*?)(?=^===|\Z)',
+            content, re.S | re.M | re.I,
+        )
+        roster = []
+        if active:
+            for match in re.finditer(r'\{\{Person\|(?P<body>[^{}]*)\}\}', active.group('body')):
+                fields = {}
+                for item in match.group('body').split('|'):
+                    if '=' in item:
+                        key, value = item.split('=', 1)
+                        fields[key.strip().casefold()] = value.strip()
+                nickname = fields.get('id') or fields.get('name')
+                if not nickname:
+                    continue
+                player_title = fields.get('link') or nickname
+                person = {
+                    'nickname': nickname[:128],
+                    'real_name': fields.get('name', '')[:128],
+                    'role': fields.get('position') or fields.get('role', ''),
+                    'title': player_title,
+                    'sort_order': int(fields.get('position', '0')) if fields.get('position', '').isdigit() else len(roster) + 1,
+                }
+                roster.append(person)
+                people[player_title.casefold()] = person
+        profiles[title] = {
+            'logo_file': logo,
+            'source_url': f"https://liquipedia.net/dota2/{quote(title.replace(' ', '_'), safe='/()_')}",
+            'roster': roster,
+        }
+
+    player_titles = list(people)
+    if player_titles:
+        time.sleep(2)
+        player_pages = _fetch_wikitext(player_titles, contact_email)
+        for page in player_pages:
+            revisions = page.get('revisions') or []
+            if not revisions:
+                continue
+            content = (revisions[0].get('slots') or {}).get('main', {}).get('content', '')
+            player_infobox = re.search(r'\{\{Infobox player(?P<body>.*?)^\}\}', content, re.S | re.M)
+            if not player_infobox:
+                continue
+            match = re.search(r'^\|image\s*=\s*([^\n|]+)', player_infobox.group('body'), re.M)
+            if not match:
+                continue
+            image = _image_filename(match.group(1))
+            person = people.get(page.get('title', '').casefold())
+            if person:
+                person['photo_file'] = image
+                if image:
+                    filenames.append(image)
+
+    if filenames:
+        time.sleep(2)
+    image_urls = _fetch_image_urls(filenames, contact_email) if filenames else {}
+    for profile in profiles.values():
+        profile['logo_url'] = image_urls.get(profile.pop('logo_file', '').casefold(), '')
+        for person in profile['roster']:
+            person['photo_url'] = image_urls.get(person.pop('photo_file', '').casefold(), '')
+
+    return profiles
