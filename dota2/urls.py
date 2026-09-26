@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
     path('accounts/', include('apps.accounts.urls')),
+    path('pro/', include('apps.esports.urls')),
     path('profile/edit/', account_views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', account_views.profile_detail, name='profile_detail'),
 ]

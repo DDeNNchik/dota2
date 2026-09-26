@@ -5,6 +5,6 @@
   <p class="eyebrow">Dota 2 community platform</p>
   <h1>Forge your game.<br><em>Build your team.</em></h1>
   <p>Находите надёжных тиммейтов, развивайтесь с тренерами и следите за соревновательной сценой.</p>
-  <div class="hero-actions"><a class="button" href="#">Найти игроков</a><a class="button button-ghost" href="#">Найти тренера</a></div>
+  <div class="hero-actions"><a class="button" href="{% url 'esports:pro_player_list' %}">Про-игроки</a><a class="button button-ghost" href="{% url 'esports:tournament_list' %}">Турниры</a></div>
 </section>
 {% endblock %}

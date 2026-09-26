@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Рейтинг игроков — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page">
+  <div class="section-heading"><p class="eyebrow">Valve Leaderboards</p><h1>Топ-100 игроков</h1><p>Официальный рейтинг Valve по регионам. Позиции не сравниваются между регионами.</p></div>
+  <div class="region-tabs" aria-label="Регион рейтинга">{% for value, label in regions %}<a class="{% if value == region %}active{% endif %}" href="?region={{ value }}">{{ label }}</a>{% endfor %}</div>
+  {% if data_error %}<p class="message warning">{{ data_error }}</p>{% endif %}
+  {% if source_updated_at %}<p class="source-note">Valve обновил этот рейтинг: {{ source_updated_at|date:'d.m.Y H:i' }} UTC.</p>{% endif %}
+  {% if players %}<div class="leaderboard-list">{% for player in players %}<article class="leaderboard-row"><div class="leaderboard-position">#{{ player.leaderboard_rank }}</div>{% if player.avatar_url %}<img class="pro-photo" src="{{ player.avatar_url }}" alt="">{% else %}<div class="pro-photo pro-photo-placeholder">{{ player.display_name|slice:':1'|upper }}</div>{% endif %}<div class="leaderboard-player"><h2><a href="{% url 'esports:pro_player_detail' player.pk %}">{% if player.team_tag %}<span class="team-prefix">{{ player.team_tag }}.</span>{% endif %}{{ player.display_name }}</a></h2><p class="muted">{{ player.country_code|default:'Страна не указана' }}{% if player.sponsor %} · {{ player.sponsor }}{% endif %}</p></div><div class="leaderboard-metric"><small>Ранг</small><strong>{% if player.rank_tier %}{{ player.rank_label }}{% else %}Синхронизация…{% endif %}</strong></div><a class="button button-small" href="{% url 'esports:pro_player_detail' player.pk %}">Статистика</a></article>{% endfor %}</div>{% else %}<section class="empty-state"><h2>Рейтинг ещё не загружен</h2><p>Запустите команду <code>python manage.py sync_valve_leaderboards --resolve</code>.</p></section>{% endif %}
+</section>
+{% endblock %}

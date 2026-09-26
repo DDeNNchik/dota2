@@ -12,7 +12,7 @@
   <header class="site-header">
     <a class="brand" href="{% url 'home' %}">Dota<span>Forge</span></a>
     <nav aria-label="Главная навигация">
-      <a href="#">Матчи</a><a href="#">Турниры</a><a href="#">Игроки</a><a href="#">Команды</a><a href="#">Гайды</a>
+      <a href="{% url 'esports:pro_player_list' %}">Про-игроки</a><a href="{% url 'esports:tournament_list' %}">Турниры</a><a href="#">Игроки</a><a href="#">Команды</a><a href="#">Гайды</a>
     </nav>
     <div class="account-menu">
       {% if user.is_authenticated %}

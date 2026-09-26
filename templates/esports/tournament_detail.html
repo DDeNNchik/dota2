@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}{{ tournament.name }} — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page"><a class="back-link" href="{% url 'esports:tournament_list' %}">← Все турниры</a><div class="tournament-detail"><p class="eyebrow">{{ tournament.get_status_display }}</p><h1>{{ tournament.name }}</h1><p class="muted">{{ tournament.starts_at|date:'d.m.Y' }} — {{ tournament.ends_at|date:'d.m.Y' }}</p><dl class="stats-grid"><div><dt>Призовой фонд</dt><dd>${{ tournament.prize_pool }}</dd></div><div><dt>Организатор</dt><dd>{{ tournament.organizer|default:'—' }}</dd></div><div><dt>Формат</dt><dd>{{ tournament.format|default:'—' }}</dd></div><div><dt>Локация</dt><dd>{{ tournament.location|default:'—' }}</dd></div></dl>{% if tournament.description %}<p class="tournament-description">{{ tournament.description|linebreaksbr }}</p>{% endif %}</div><section class="profile-section"><h2>Участники</h2>{% if tournament.teams.all %}<div class="team-tags">{% for team in tournament.teams.all %}<span>{{ team.name }}</span>{% endfor %}</div>{% else %}<p>Состав участников ещё не опубликован.</p>{% endif %}</section></section>
+{% endblock %}
