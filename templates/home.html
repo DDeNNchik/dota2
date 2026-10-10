@@ -2,10 +2,21 @@
 {% load ui_i18n %}
 {% block title %}DotaForge — Forge your game{% endblock %}
 {% block content %}
-<section class="hero">
+<section class="hero home-hero">
   <p class="eyebrow">Dota 2 community platform</p>
   <h1>Forge your game.<br><em>Build your team.</em></h1>
   <p>{% tr 'Находите надёжных тиммейтов, развивайтесь с тренерами и следите за соревновательной сценой.' %}</p>
   <div class="hero-actions"><a class="button" href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a class="button button-ghost" href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a></div>
+</section>
+<section class="home-news" aria-labelledby="home-news-title">
+  <div class="home-news-heading"><p class="eyebrow">{% tr 'Сцена Dota 2' %}</p><h2 id="home-news-title">{% tr 'Главные новости' %}</h2></div>
+  {% if news %}
+    <div class="home-news-list">
+      {% with item=news.0 %}<article class="home-news-item home-news-feature">{% if item.image_url %}<a class="home-news-image-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img class="home-news-image" src="{{ item.image_url }}" alt="" loading="lazy"></a>{% endif %}<div class="home-news-copy"><h3><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a></h3>{% if item.summary %}<p>{{ item.summary }}</p>{% endif %}<a class="home-news-source" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">GosuGamers ↗</a></div></article>{% endwith %}
+    </div>
+    <a class="more-news-link" href="{% url 'news' %}">{% tr 'Все новости' %}<span aria-hidden="true">→</span></a>
+  {% else %}
+    <p class="home-news-empty">{% tr 'Новости временно недоступны.' %}</p>
+  {% endif %}
 </section>
 {% endblock %}

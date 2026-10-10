@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Игроки сайта' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page">
+  <div class="section-heading"><p class="eyebrow">DotaForge</p><h1>{% tr 'Топ игроков сайта' %}</h1><p>{% tr 'Игроки сайта, отсортированные по рейтингу MMR.' %}</p></div>
+  {% if players %}
+    <div class="leaderboard-list registered-player-list">
+      {% for player in players %}<a class="leaderboard-row registered-player-row" href="{% url 'profile_detail' player.username %}"><span class="leaderboard-position">#{{ forloop.counter }}</span>{% if player.steam_account.avatar_url %}<img class="pro-photo" src="{{ player.steam_account.avatar_url }}" alt="" loading="lazy">{% elif player.profile.avatar %}<img class="pro-photo" src="{{ player.profile.avatar.url }}" alt="" loading="lazy">{% else %}<span class="pro-photo pro-photo-placeholder">{{ player.username|slice:':1'|upper }}</span>{% endif %}<span class="leaderboard-player"><strong>{% if player.profile.dota_nickname %}{{ player.profile.dota_nickname }}{% else %}{{ player.steam_account.persona_name|default:player.username }}{% endif %}</strong><span class="registered-player-username">{{ player.username }}</span></span><span class="leaderboard-metric"><small>{% tr 'Рейтинг MMR' %}</small><strong>{{ player.steam_account.mmr_estimate }}</strong></span></a>{% endfor %}
+    </div>
+  {% else %}
+    <section class="empty-state"><h2>{% tr 'Пока нет игроков с рейтингом' %}</h2><p>{% tr 'Рейтинг появится после привязки Steam и обновления статистики OpenDota.' %}</p></section>
+  {% endif %}
+</section>
+{% endblock %}

@@ -3,7 +3,8 @@ from django.contrib.auth import login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model
-from django.http import HttpResponseBadRequest
+from django.core.cache import cache
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -15,6 +16,57 @@ from .services import STEAM_ID64_OFFSET, SteamServiceError, refresh_dota_statist
 
 
 User = get_user_model()
+
+
+def player_search(request):
+    """Return nickname suggestions from OpenDota without blocking the page load."""
+    query = ' '.join(request.GET.get('q', '').split())[:80]
+    if len(query) < 2:
+        return JsonResponse({'results': []})
+
+    cache_key = f'dotaforge_player_search_{query.casefold()}'
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return JsonResponse({'results': cached})
+
+    from apps.esports.services.opendota import ExternalDataError, OpenDotaClient
+
+    client = OpenDotaClient()
+    client.timeout_seconds = 5
+    try:
+        candidates = client.search(query)
+    except ExternalDataError:
+        return JsonResponse({'results': [], 'unavailable': True}, status=503)
+
+    if not isinstance(candidates, list):
+        return JsonResponse({'results': [], 'unavailable': True}, status=503)
+
+    results = []
+    seen = set()
+    for candidate in candidates:
+        account_id = candidate.get('account_id')
+        nickname = (candidate.get('personaname') or '').strip()
+        if not account_id or not nickname or account_id in seen:
+            continue
+        seen.add(account_id)
+        results.append({
+            'account_id': account_id,
+            'nickname': nickname,
+            'avatar_url': candidate.get('avatarfull') or '',
+            'url': f'https://www.opendota.com/players/{account_id}',
+        })
+        if len(results) == 8:
+            break
+
+    cache.set(cache_key, results, 10 * 60)
+    return JsonResponse({'results': results})
+
+
+def site_players(request):
+    players = User.objects.filter(
+        steam_account__mmr_estimate__isnull=False,
+    ).select_related('profile', 'steam_account').order_by('-steam_account__mmr_estimate', 'username')[:100]
+    return render(request, 'players/site_players.html', {'players': players})
 
 
 class DotaForgeLoginView(auth_views.LoginView):

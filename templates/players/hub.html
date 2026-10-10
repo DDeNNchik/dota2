@@ -9,8 +9,80 @@
     <p>{% tr 'Выберите, что хотите сделать.' %}</p>
   </div>
   <div class="hero-actions players-actions">
-    <button class="button" type="button">{% tr 'Найти профиль и статистику игрока' %}</button>
-    <button class="button button-ghost" type="button">{% tr 'Игроки сайта' %}</button>
+    <button class="button" id="open-player-search" type="button" aria-expanded="false" aria-controls="player-search-panel">{% tr 'Найти профиль и статистику игрока' %}</button>
+    <a class="button button-ghost" href="{% url 'site_players' %}">{% tr 'Игроки сайта' %}</a>
   </div>
+  <section class="player-search-panel" id="player-search-panel" hidden>
+    <label for="player-search-input">{% tr 'Введите игровой ник' %}</label>
+    <input id="player-search-input" type="search" autocomplete="off" maxlength="80" placeholder="{% tr 'Начните вводить никнейм' %}" aria-controls="player-search-results">
+    <p class="muted player-search-hint">{% tr 'Выберите игрока из результатов, чтобы открыть его статистику OpenDota.' %}</p>
+    <div class="player-search-results" id="player-search-results" role="listbox" aria-live="polite" data-search-url="{% url 'player_search' %}" data-prompt="{% tr 'Введите минимум два символа.' %}" data-loading="{% tr 'Ищем игроков…' %}" data-empty="{% tr 'Игроки не найдены.' %}" data-error="{% tr 'Поиск временно недоступен.' %}"></div>
+  </section>
 </section>
+<script>
+(() => {
+  const toggle = document.getElementById('open-player-search');
+  const panel = document.getElementById('player-search-panel');
+  const input = document.getElementById('player-search-input');
+  const results = document.getElementById('player-search-results');
+  if (!toggle || !panel || !input || !results) return;
+
+  const showMessage = (message) => { results.replaceChildren(); results.textContent = message; };
+  let timer;
+  let controller;
+  toggle.addEventListener('click', () => {
+    const open = panel.hidden;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) { showMessage(results.dataset.prompt); input.focus(); }
+  });
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      const firstResult = results.querySelector('a[href]');
+      if (firstResult) { event.preventDefault(); firstResult.click(); }
+    }
+  });
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    if (controller) controller.abort();
+    const query = input.value.trim();
+    if (query.length < 2) { showMessage(results.dataset.prompt); return; }
+    showMessage(results.dataset.loading);
+    timer = setTimeout(async () => {
+      controller = new AbortController();
+      try {
+        const response = await fetch(`${results.dataset.searchUrl}?q=${encodeURIComponent(query)}`, {signal: controller.signal});
+        if (!response.ok) throw new Error('Search unavailable');
+        const data = await response.json();
+        results.replaceChildren();
+        if (!data.results.length) { showMessage(results.dataset.empty); return; }
+        for (const player of data.results) {
+          const link = document.createElement('a');
+          link.className = 'player-search-result';
+          link.href = player.url;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.setAttribute('role', 'option');
+          if (player.avatar_url) {
+            const avatar = document.createElement('img');
+            avatar.src = player.avatar_url;
+            avatar.alt = '';
+            avatar.loading = 'lazy';
+            link.append(avatar);
+          }
+          const name = document.createElement('span');
+          name.textContent = player.nickname;
+          const arrow = document.createElement('span');
+          arrow.className = 'player-search-arrow';
+          arrow.textContent = '↗';
+          link.append(name, arrow);
+          results.append(link);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') showMessage(results.dataset.error);
+      }
+    }, 350);
+  });
+})();
+</script>
 {% endblock %}

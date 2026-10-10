@@ -18,14 +18,29 @@ from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
+from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from apps.accounts import views as account_views
 from apps.accounts.views_i18n import set_language
+from apps.esports.services.news import fetch_homepage_news, translate_homepage_news
+
+
+def home(request):
+    news = translate_homepage_news(fetch_homepage_news(), request.LANGUAGE_CODE)
+    return render(request, 'home.html', {'news': news})
+
+
+def news_page(request):
+    news = translate_homepage_news(fetch_homepage_news(), request.LANGUAGE_CODE)
+    return render(request, 'news.html', {'news': news})
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', home, name='home'),
+    path('news/', news_page, name='news'),
+    path('players/search/', account_views.player_search, name='player_search'),
+    path('players/site/', account_views.site_players, name='site_players'),
     path('players/', TemplateView.as_view(template_name='players/hub.html'), name='players_hub'),
     path('accounts/', include('apps.accounts.urls')),
     path('language/set/', set_language, name='set_language'),

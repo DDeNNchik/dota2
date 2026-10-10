@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Новости Dota 2' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="home-news news-page" aria-labelledby="news-page-title">
+  <div class="home-news-heading"><p class="eyebrow">{% tr 'Сцена Dota 2' %}</p><h1 id="news-page-title">{% tr 'Новости Dota 2' %}</h1></div>
+  {% if news %}
+    <div class="home-news-list">
+      {% for item in news %}<article class="home-news-item">{% if item.image_url %}<a class="home-news-image-link" href="{{ item.url }}" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true"><img class="home-news-image" src="{{ item.image_url }}" alt="" loading="lazy"></a>{% endif %}<div class="home-news-copy"><h2><a href="{{ item.url }}" target="_blank" rel="noopener noreferrer">{{ item.title }}</a></h2>{% if item.summary %}<p>{{ item.summary }}</p>{% endif %}<a class="home-news-source" href="{{ item.url }}" target="_blank" rel="noopener noreferrer">GosuGamers ↗</a></div></article>{% endfor %}
+    </div>
+  {% else %}
+    <p class="home-news-empty">{% tr 'Новости временно недоступны.' %}</p>
+  {% endif %}
+</section>
+{% endblock %}
