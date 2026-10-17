@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Найти команду' %} — DotaForge{% endblock %}
+{% block content %}
+<section class="listing-page team-finder-page">
+  <div class="section-heading">
+    <p class="eyebrow">DotaForge</p>
+    <h1>{% tr 'Найти команду' %}</h1>
+    <p>{% tr 'Подберём игроков DotaForge, с которыми можно собрать команду. Сравним роли, MMR, часовой пояс, героев и расписание.' %}</p>
+  </div>
+  <section class="team-finder-panel">
+    <form method="post">{% csrf_token %}<button class="button" type="submit">{% tr 'Найти команду' %}</button></form>
+    {% if not has_search_data %}<p class="team-finder-hint">{% tr 'Чтобы подбор был точнее, добавь роли, любимых героев, часовой пояс или подключи Steam для MMR.' %} <a href="{% url 'profile_edit' %}">{% tr 'Заполнить игровой профиль' %}</a></p>{% endif %}
+  </section>
+  {% if matches != None %}
+    <section class="team-match-section" aria-live="polite">
+      <h2>{% tr 'Подходящие игроки' %}</h2>
+      {% if matches %}
+        <div class="team-match-grid">
+          {% for match in matches %}
+            <article class="team-match-card">
+              <div class="team-match-header">
+                {% if match.avatar_url %}<img src="{{ match.avatar_url }}" alt="" loading="lazy">{% else %}<span class="team-match-avatar">{{ match.nickname|slice:':1'|upper }}</span>{% endif %}
+                <div><h3>{{ match.nickname }}</h3><small>@{{ match.username }}</small></div>
+                <strong class="team-match-score">{{ match.score }}%</strong>
+              </div>
+              {% if match.mmr %}<p class="team-match-mmr">MMR {{ match.mmr }}</p>{% endif %}
+              <ul>{% for reason in match.reasons %}<li>{% tr reason %}</li>{% endfor %}</ul>
+              <a class="button button-ghost" href="{{ match.url }}">{% tr 'Открыть профиль' %}</a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <section class="empty-state"><h2>{% tr 'Пока нет подходящих игроков' %}</h2><p>{% tr 'Заполни игровой профиль и попробуй снова, когда на сайте появятся игроки с похожими данными.' %}</p><a href="{% url 'profile_edit' %}">{% tr 'Заполнить игровой профиль' %}</a></section>
+      {% endif %}
+    </section>
+  {% endif %}
+</section>
+{% endblock %}

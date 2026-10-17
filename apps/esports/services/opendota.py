@@ -1,8 +1,9 @@
 """Small, dependency-free client for the public OpenDota API."""
 
 import json
+import os
 from urllib.error import HTTPError, URLError
-from urllib.parse import quote
+from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
 from django.utils import timezone
@@ -17,6 +18,10 @@ class OpenDotaClient:
     timeout_seconds = 12
 
     def get_json(self, path):
+        api_key = os.environ.get('OPENDOTA_API_KEY', '').strip()
+        if api_key:
+            separator = '&' if '?' in path else '?'
+            path = f'{path}{separator}{urlencode({"api_key": api_key})}'
         request = Request(f'{self.base_url}{path}', headers={'User-Agent': 'DotaForge/1.0'})
         try:
             with urlopen(request, timeout=self.timeout_seconds) as response:
@@ -25,7 +30,7 @@ class OpenDotaClient:
             raise ExternalDataError('OpenDota request failed') from error
 
     def search(self, name):
-        return self.get_json(f'/search?q={quote(name)}')
+        return self.get_json(f'/search?{urlencode({"q": name})}')
 
     def player(self, account_id):
         return self.get_json(f'/players/{account_id}')

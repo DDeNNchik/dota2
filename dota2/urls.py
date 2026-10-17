@@ -41,6 +41,7 @@ urlpatterns = [
     path('news/', news_page, name='news'),
     path('players/search/', account_views.player_search, name='player_search'),
     path('players/site/', account_views.site_players, name='site_players'),
+    path('players/find-team/', account_views.team_finder, name='team_finder'),
     path('players/', TemplateView.as_view(template_name='players/hub.html'), name='players_hub'),
     path('accounts/', include('apps.accounts.urls')),
     path('language/set/', set_language, name='set_language'),

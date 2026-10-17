@@ -6,13 +6,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="DotaForge — социальная платформа для игроков Dota 2.">
   <title>{% block title %}DotaForge{% endblock %}</title>
-  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261003-player-hub">
+  <link rel="stylesheet" href="{% static 'css/site.css' %}?v=20261017-team-finder">
 </head>
 <body>
+  {% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'pro_player_list' or request.resolver_match.url_name == 'tournament_list' or request.resolver_match.url_name == 'pro_team_list' %}
+    <div class="news-video-background" aria-hidden="true">
+      {% if request.resolver_match.url_name == 'home' %}
+        <iframe id="news-background-player" data-src="https://www.youtube-nocookie.com/embed/_N7WS6dEQHw?autoplay=1&amp;mute=1&amp;controls=0&amp;disablekb=1&amp;loop=1&amp;playlist=_N7WS6dEQHw&amp;playsinline=1&amp;rel=0&amp;enablejsapi=1" title="Dota 2 video background" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"></iframe>
+      {% elif request.resolver_match.url_name == 'pro_player_list' %}
+        <iframe id="news-background-player" data-src="https://www.youtube-nocookie.com/embed/JHCLQvjnm3E?start=1359&amp;autoplay=1&amp;mute=1&amp;controls=0&amp;disablekb=1&amp;loop=1&amp;playlist=JHCLQvjnm3E&amp;playsinline=1&amp;rel=0&amp;enablejsapi=1" title="Dota 2 video background" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"></iframe>
+      {% elif request.resolver_match.url_name == 'pro_team_list' %}
+        <iframe id="news-background-player" data-src="https://www.youtube-nocookie.com/embed/mB7E_1afbrQ?start=826&amp;autoplay=1&amp;mute=1&amp;controls=0&amp;disablekb=1&amp;loop=1&amp;playlist=mB7E_1afbrQ&amp;playsinline=1&amp;rel=0&amp;enablejsapi=1" title="Dota 2 video background" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"></iframe>
+      {% elif request.resolver_match.url_name == 'tournament_list' %}
+        <iframe id="news-background-player" data-src="https://www.youtube-nocookie.com/embed/9_DZC8E8ngQ?start=60&amp;autoplay=1&amp;mute=1&amp;controls=0&amp;disablekb=1&amp;loop=1&amp;playlist=9_DZC8E8ngQ&amp;playsinline=1&amp;rel=0&amp;enablejsapi=1" title="Dota 2 video background" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"></iframe>
+      {% else %}
+        <iframe id="news-background-player" data-src="https://www.youtube-nocookie.com/embed/9_DZC8E8ngQ?autoplay=1&amp;mute=1&amp;controls=0&amp;disablekb=1&amp;loop=1&amp;playlist=9_DZC8E8ngQ&amp;playsinline=1&amp;rel=0&amp;enablejsapi=1" title="Dota 2 video background" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; picture-in-picture" tabindex="-1"></iframe>
+      {% endif %}
+    </div>
+  {% endif %}
   <header class="site-header">
     <a class="brand" href="{% url 'home' %}">Dota<span>Forge</span></a>
     <nav aria-label="{% tr 'Главная навигация' %}">
-      <span class="nav-community"><a href="{% url 'players_hub' %}">{% tr 'Игроки' %}</a></span><span class="nav-divider" aria-hidden="true">|</span><span class="nav-esports"><a href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a><a href="{% url 'esports:pro_team_list' %}">{% tr 'Команды' %}</a><a href="{% url 'news' %}">{% tr 'Новости' %}</a></span>
+      <span class="nav-community"><a href="{% url 'players_hub' %}">{% tr 'Игроки' %}</a><a href="{% url 'team_finder' %}">{% tr 'Найти команду' %}</a></span><span class="nav-divider" aria-hidden="true">|</span><span class="nav-esports"><a href="{% url 'esports:pro_player_list' %}">{% tr 'Про-игроки' %}</a><a href="{% url 'esports:tournament_list' %}">{% tr 'Турниры' %}</a><a href="{% url 'esports:pro_team_list' %}">{% tr 'Команды' %}</a><a href="{% url 'news' %}">{% tr 'Новости' %}</a></span>
     </nav>
     <div class="account-menu">
       <form class="language-switcher" method="post" action="{% url 'set_language' %}" aria-label="{% tr 'Выбор языка' %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button name="language" value="ru" class="{% if LANGUAGE_CODE == 'ru' %}active{% endif %}" type="submit">RU</button><button name="language" value="en" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}" type="submit">EN</button><button name="language" value="uk" class="{% if LANGUAGE_CODE == 'uk' %}active{% endif %}" type="submit">UK</button></form>
@@ -38,5 +53,57 @@
     {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
     {% block content %}{% endblock %}
   </main>
+  {% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'pro_player_list' or request.resolver_match.url_name == 'tournament_list' or request.resolver_match.url_name == 'pro_team_list' %}
+    <script>
+    (() => {
+      const frame = document.getElementById('news-background-player');
+      if (!frame || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const playerUrl = new URL(frame.dataset.src);
+      playerUrl.searchParams.set('origin', window.location.origin);
+      let initialPlaybackTime = null;
+      {% if request.resolver_match.url_name == 'pro_player_list' %}
+        const regionPlaybackKey = 'proPlayersBackgroundTime';
+        const savedPlaybackTime = sessionStorage.getItem(regionPlaybackKey);
+        if (savedPlaybackTime !== null) {
+          initialPlaybackTime = Number(savedPlaybackTime);
+          playerUrl.searchParams.set('start', String(Math.floor(initialPlaybackTime)));
+          sessionStorage.removeItem(regionPlaybackKey);
+        }
+        const savePlaybackTime = () => {
+          try {
+            const currentTime = window.dotaPlayersBackgroundPlayer?.getCurrentTime();
+            if (Number.isFinite(currentTime) && currentTime > 0) {
+              sessionStorage.setItem(regionPlaybackKey, String(Math.floor(currentTime)));
+            }
+          } catch (_) {}
+        };
+        window.setInterval(savePlaybackTime, 500);
+        document.querySelectorAll('.region-tabs a').forEach((link) => {
+          link.addEventListener('click', savePlaybackTime);
+        });
+      {% endif %}
+      frame.src = playerUrl.toString();
+      window.onYouTubeIframeAPIReady = () => {
+        window.dotaPlayersBackgroundPlayer = new YT.Player(frame, {
+          events: {
+            onReady(event) {
+              event.target.mute();
+              {% if request.resolver_match.url_name == 'pro_player_list' %}
+                if (Number.isFinite(initialPlaybackTime) && initialPlaybackTime > 0) {
+                  event.target.seekTo(initialPlaybackTime, true);
+                }
+              {% endif %}
+              event.target.setPlaybackRate(0.5);
+              event.target.playVideo();
+            }
+          }
+        });
+      };
+      const api = document.createElement('script');
+      api.src = 'https://www.youtube.com/iframe_api';
+      document.head.append(api);
+    })();
+    </script>
+  {% endif %}
 </body>
 </html>

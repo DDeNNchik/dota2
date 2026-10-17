@@ -14,9 +14,9 @@
         <a class="team-card team-rank-row" href="{% url 'esports:pro_team_detail' team.slug %}">
           <span class="team-rank-number">#{{ team.ranking_position }}</span>
           {% if team.logo_url %}
-            <span class="team-logo-wrap"><img src="{{ team.logo_url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
+            <span class="team-logo-wrap"><img src="{{ team.logo_url }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
           {% elif team.logo %}
-            <span class="team-logo-wrap"><img src="{{ team.logo.url }}" alt="" loading="lazy" decoding="async" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
+            <span class="team-logo-wrap"><img src="{{ team.logo.url }}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" width="48" height="48" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="team-logo-fallback" hidden>{{ team.name|slice:':1'|upper }}</span></span>
           {% else %}
             <span class="team-logo-fallback">{{ team.name|slice:':1'|upper }}</span>
           {% endif %}

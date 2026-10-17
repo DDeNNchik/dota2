@@ -9,13 +9,13 @@
     <p>{% tr 'Выберите, что хотите сделать.' %}</p>
   </div>
   <div class="hero-actions players-actions">
-    <button class="button" id="open-player-search" type="button" aria-expanded="false" aria-controls="player-search-panel">{% tr 'Найти профиль и статистику игрока' %}</button>
+    <button class="button" id="open-player-search" type="button" aria-expanded="false" aria-controls="player-search-panel">{% tr 'Найти игрока DotaForge' %}</button>
     <a class="button button-ghost" href="{% url 'site_players' %}">{% tr 'Игроки сайта' %}</a>
   </div>
   <section class="player-search-panel" id="player-search-panel" hidden>
     <label for="player-search-input">{% tr 'Введите игровой ник' %}</label>
     <input id="player-search-input" type="search" autocomplete="off" maxlength="80" placeholder="{% tr 'Начните вводить никнейм' %}" aria-controls="player-search-results">
-    <p class="muted player-search-hint">{% tr 'Выберите игрока из результатов, чтобы открыть его статистику OpenDota.' %}</p>
+    <p class="muted player-search-hint">{% tr 'Ищите по игровому нику или имени пользователя DotaForge.' %}</p>
     <div class="player-search-results" id="player-search-results" role="listbox" aria-live="polite" data-search-url="{% url 'player_search' %}" data-prompt="{% tr 'Введите минимум два символа.' %}" data-loading="{% tr 'Ищем игроков…' %}" data-empty="{% tr 'Игроки не найдены.' %}" data-error="{% tr 'Поиск временно недоступен.' %}"></div>
   </section>
 </section>
@@ -60,8 +60,6 @@
           const link = document.createElement('a');
           link.className = 'player-search-result';
           link.href = player.url;
-          link.target = '_blank';
-          link.rel = 'noopener noreferrer';
           link.setAttribute('role', 'option');
           if (player.avatar_url) {
             const avatar = document.createElement('img');
@@ -72,6 +70,12 @@
           }
           const name = document.createElement('span');
           name.textContent = player.nickname;
+          if (player.username && player.username !== player.nickname) {
+            const identity = document.createElement('small');
+            identity.className = 'registered-player-username';
+            identity.textContent = player.username;
+            name.append(identity);
+          }
           const arrow = document.createElement('span');
           arrow.className = 'player-search-arrow';
           arrow.textContent = '↗';
