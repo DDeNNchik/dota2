@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-%354m_!4^#4tsw8*gsy3-2r8gr!(2ez1)(n@%p%)w#^aqe3%z9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -50,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'dota2.urls'
@@ -79,11 +81,14 @@ WSGI_APPLICATION = 'dota2.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'test_postgress_djlb',
+        'USER': 'test_postgress_djlb_user',
+        'PASSWORD': '02YATy8HMXHj8GhWG0SrTEw2KnAP9vu4',
+        'HOST': 'dpg-db9ojvbbc2fs73clulrg-a',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -135,3 +140,8 @@ LOGIN_URL = 'accounts:login'
 LOGIN_REDIRECT_URL = 'profile_edit'
 LOGOUT_REDIRECT_URL = 'home'
 SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+
+
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
