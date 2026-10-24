@@ -82,10 +82,10 @@ WSGI_APPLICATION = 'dota2.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'test_postgress_djlb',
-        'USER': 'test_postgress_djlb_user',
-        'PASSWORD': '02YATy8HMXHj8GhWG0SrTEw2KnAP9vu4',
-        'HOST': 'dpg-db9ojvbbc2fs73clulrg-a',
+        'NAME': 'dota2db_u3vr',
+        'USER': 'den',
+        'PASSWORD': 'VNVM6dXe0wjnivoRNzPLsqUO4TApssuc',
+        'HOST': 'dpg-dbecgclg1s2s73f5jgfg-a',
         'PORT': '5432',
     }
 }
