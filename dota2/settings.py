@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,11 +22,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: load this value from an environment variable in production.
-SECRET_KEY = 'django-insecure-%354m_!4^#4tsw8*gsy3-2r8gr!(2ez1)(n@%p%)w#^aqe3%z9'
+# Keep development convenient while requiring a secret key in production.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
+    'django-insecure-%354m_!4^#4tsw8*gsy3-2r8gr!(2ez1)(n@%p%)w#^aqe3%z9',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', 'true').lower() == 'true'
 
 ALLOWED_HOSTS = ['*']
 
@@ -80,14 +85,11 @@ WSGI_APPLICATION = 'dota2.wsgi.application'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'dota2db_u3vr',
-        'USER': 'den',
-        'PASSWORD': 'VNVM6dXe0wjnivoRNzPLsqUO4TApssuc',
-        'HOST': 'dpg-dbecgclg1s2s73f5jgfg-a',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 # Password validation
