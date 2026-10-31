@@ -50,7 +50,7 @@
     </div>
   </header>
   <main class="page-shell">
-    {% for message in messages %}<div class="message {{ message.tags }}">{{ message }}</div>{% endfor %}
+    {% for message in messages %}<div class="message {{ message.tags }}">{{ message|tr }}</div>{% endfor %}
     {% block content %}{% endblock %}
   </main>
   {% if request.resolver_match.url_name == 'news' or request.resolver_match.url_name == 'home' or request.resolver_match.url_name == 'pro_player_list' or request.resolver_match.url_name == 'tournament_list' or request.resolver_match.url_name == 'pro_team_list' %}
@@ -77,7 +77,8 @@
             }
           } catch (_) {}
         };
-        window.setInterval(savePlaybackTime, 500);
+        window.setInterval(savePlaybackTime, 250);
+        window.addEventListener('pagehide', savePlaybackTime);
         document.querySelectorAll('.region-tabs a').forEach((link) => {
           link.addEventListener('click', savePlaybackTime);
         });
@@ -107,3 +108,4 @@
   {% endif %}
 </body>
 </html>
+
