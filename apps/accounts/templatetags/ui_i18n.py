@@ -55,6 +55,7 @@ TRANSLATIONS = {
 
 
 @register.simple_tag
+@register.filter
 def tr(value):
     return TRANSLATIONS.get(get_language(), {}).get(value, value)
 
