@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.utils.translation import get_language
 
 from .models import Hero, Profile, Role
 
@@ -44,6 +45,23 @@ class ProfileForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['preferred_roles'].queryset = Role.objects.all()
         self.fields['favorite_heroes'].queryset = Hero.objects.all()
+        language = get_language()
+        placeholders = {
+            'en': {
+                'description': 'Tell us what kind of teammate you are looking for…',
+                'country': 'For example, Ukraine',
+                'dota_nickname': 'Your Dota 2 nickname',
+                'availability': 'For example, weekdays after 19:00',
+            },
+            'uk': {
+                'description': 'Розкажіть, якого тіммейта ви шукаєте…',
+                'country': 'Наприклад, Україна',
+                'dota_nickname': 'Ваш нікнейм у Dota 2',
+                'availability': 'Наприклад, у будні після 19:00',
+            },
+        }.get(language, {})
+        for field_name, placeholder in placeholders.items():
+            self.fields[field_name].widget.attrs['placeholder'] = placeholder
 
     def clean_steam_id(self):
         steam_id = self.cleaned_data['steam_id'].strip()

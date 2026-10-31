@@ -1,19 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}Профиль — DotaForge{% endblock %}
+{% load ui_i18n %}
+{% block title %}{% tr 'Профиль' %} — DotaForge{% endblock %}
 {% block content %}
 <section class="profile-editor">
-  <div class="section-heading"><p class="eyebrow">Игровой профиль</p><h1>Расскажите о своей игре</h1><p>Все поля необязательны. На публичной странице отобразится только то, что вы заполните.</p></div>
-  <section class="steam-connect-card">{% if user.steam_account %}<div><strong>Steam is connected</strong><p>{{ user.steam_account.persona_name|default:user.steam_account.steam_id }}</p></div><a class="button button-small" href="{% url 'accounts:steam_stats' %}">My Dota stats</a>{% else %}<div><strong>Connect your Steam account</strong><p>Verify your Steam account to show your own Dota statistics.</p></div><a class="button button-small" href="{% url 'accounts:steam_connect' %}">Connect Steam</a>{% endif %}</section>
+  <div class="section-heading"><p class="eyebrow">{% tr 'Игровой профиль' %}</p><h1>{% tr 'Расскажите о своей игре' %}</h1><p>{% tr 'Все поля необязательны. На публичной странице отобразится только то, что вы заполните.' %}</p></div>
+  <section class="steam-connect-card">{% if user.steam_account %}<div><strong>{% tr 'Steam is connected' %}</strong><p>{{ user.steam_account.persona_name|default:user.steam_account.steam_id }}</p></div><a class="button button-small" href="{% url 'accounts:steam_stats' %}">{% tr 'My Dota stats' %}</a>{% else %}<div><strong>{% tr 'Connect your Steam account' %}</strong><p>{% tr 'Verify your Steam account to show your own Dota statistics.' %}</p></div><a class="button button-small" href="{% url 'accounts:steam_connect' %}">{% tr 'Connect Steam' %}</a>{% endif %}</section>
   <form class="profile-form" method="post" enctype="multipart/form-data" novalidate>{% csrf_token %}
     {% for field in form %}
       <div class="field {% if field.name == 'description' %}field-wide{% endif %}{% if field.name == 'favorite_heroes' %}field-wide field-heroes{% endif %}{% if field.name == 'microphone_available' %}field-check{% endif %}">
-        {% if field.name == 'microphone_available' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
-        {% elif field.name == 'favorite_heroes' %}<label>{{ field.label }}</label><details class="hero-picker"><summary>Открыть список героев</summary>{{ field }}</details><small class="field-help">Можно выбрать несколько героев.</small>
-        {% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}
+        {% if field.name == 'microphone_available' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label|tr }}</label>
+        {% elif field.name == 'favorite_heroes' %}<label>{{ field.label|tr }}</label><details class="hero-picker"><summary>{% tr 'Открыть список героев' %}</summary>{{ field }}</details><small class="field-help">{% tr 'Можно выбрать несколько героев.' %}</small>
+        {% else %}<label for="{{ field.id_for_label }}">{{ field.label|tr }}</label>{{ field }}{% endif %}
         {% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}
       </div>
     {% endfor %}
-    <div class="form-actions"><button class="button" type="submit">Сохранить профиль</button><a class="button button-ghost" href="{% url 'profile_detail' user.username %}">Посмотреть страницу</a></div>
+    <div class="form-actions"><button class="button" type="submit">{% tr 'Сохранить профиль' %}</button><a class="button button-ghost" href="{% url 'profile_detail' user.username %}">{% tr 'Посмотреть страницу' %}</a></div>
   </form>
 </section>
 {% endblock %}
