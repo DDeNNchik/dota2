@@ -11,7 +11,7 @@
         {% if field.name == 'microphone_available' %}{{ field }}<label for="{{ field.id_for_label }}">{{ field.label|tr }}</label>
         {% elif field.name == 'favorite_heroes' %}<label>{{ field.label|tr }}</label><details class="hero-picker"><summary>{% tr 'Открыть список героев' %}</summary>{{ field }}</details><small class="field-help">{% tr 'Можно выбрать несколько героев.' %}</small>
         {% else %}<label for="{{ field.id_for_label }}">{{ field.label|tr }}</label>{{ field }}{% endif %}
-        {% for error in field.errors %}<small class="error">{{ error }}</small>{% endfor %}
+        {% for error in field.errors %}<small class="error">{{ error|tr }}</small>{% endfor %}
       </div>
     {% endfor %}
     <div class="form-actions"><button class="button" type="submit">{% tr 'Сохранить профиль' %}</button><a class="button button-ghost" href="{% url 'profile_detail' user.username %}">{% tr 'Посмотреть страницу' %}</a></div>
