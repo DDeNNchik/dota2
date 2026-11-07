@@ -63,7 +63,14 @@ TRANSLATIONS = {
 @register.simple_tag
 @register.filter
 def tr(value):
-    return TRANSLATIONS.get(get_language(), {}).get(value, value)
+    # Django messages are lazy, unhashable Message objects. Normalize template
+    # values before using them as translation keys.
+    translations = TRANSLATIONS.get(get_language(), {})
+    try:
+        return translations.get(value, value)
+    except TypeError:
+        text = str(value)
+        return translations.get(text, text)
 
 
 @register.filter
